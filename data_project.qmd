@@ -13,3 +13,11 @@ library(vroom)
 library(here)
 ```
 
+```{r}
+#| message: false
+museum <- vroom(here("musees-de-france-base-museofile.csv"))
+freq <- vroom(here("frequentation-des-musees-de-france.csv"))
+```
+
+
+
