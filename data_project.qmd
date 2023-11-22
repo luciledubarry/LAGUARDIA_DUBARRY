@@ -1,0 +1,15 @@
+---
+title: "Data Management Project"
+format: html
+---
+
+```{r}
+#| message : false 
+here::i_am("LAGUARDIA_DUBARRY.Rproj")
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(vroom)
+library(here)
+```
+
