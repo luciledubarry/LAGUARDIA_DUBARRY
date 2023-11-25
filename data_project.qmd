@@ -19,5 +19,10 @@ museum <- vroom(here("musees-de-france-base-museofile.csv"))
 freq <- vroom(here("frequentation-des-musees-de-france.csv"))
 ```
 
+## Link to Github
+
+We work on the Github project, available [here](https://github.com/luciledubarry/LAGUARDIA_DUBARRY.git).
+
+
 
 
