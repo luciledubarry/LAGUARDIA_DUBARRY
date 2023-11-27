@@ -32,3 +32,8 @@ Our first data set, **"Musées de France: base Muséofile"**, features all the m
 Our second data set, **"Fréquentation des musées de France"**, contains the number of visitors each year, from 2001 to 2021.
 
 The advantage of gathering databases from the same website and the same institution of origin is that the merging will be a lot easier, due to the fact that they have variables in common. What's more, the source being the Ministry of culture gives us the assurance that the data has been collected correctly.
+
+The **"Musées de France: base Muséofile"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/musees-de-france-base-museofile/#/resources)
+
+The **"Fréquentations des musées de France"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/frequentation-des-musees-de-france-1/#/resources)
+
