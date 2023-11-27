@@ -23,6 +23,12 @@ freq <- vroom(here("frequentation-des-musees-de-france.csv"))
 
 We work on the Github project, available [here](https://github.com/luciledubarry/LAGUARDIA_DUBARRY.git).
 
+## Sources
 
+Both our data sets come from the **French Ministry of culture**. Since 2011, the Ministry of culture has set up both a public data census service and a data sharing service, open to all citizens, researchers, students, journalists, and companies. Its aim is to improve the exposure of cultural works and French cultural institutions. Even though it is a legal obligation since 2018 for administrations to open up their data, there are a lot of benefits from sharing these data: full transparency with the citizens, support for social innovations, boosting the local economy through discovering local cultural institutions, boosting France international influence etc.
 
+Our first data set, **"Musées de France: base Muséofile"**, features all the museums that have been given the "Musée de France" label by the *Code du Patrimoine*. A "Musée de France" is, in accordance with the *Code du Patrimoine*, a "permanent collection made up of items whose conservation and presentation are of public interest, and organized for the knowledge, education and enjoyment of the public". As we'll see later, it contains basic information on these museums (such as the address, the website or the year of creation), as well as interesting complementary characteristics (such as the main theme of the museum, its most important asset or the leading artist of its permanent collection).
 
+Our second data set, **"Fréquentation des musées de France"**, contains the number of visitors each year, from 2001 to 2021.
+
+The advantage of gathering databases from the same website and the same institution of origin is that the merging will be a lot easier, due to the fact that they have variables in common. What's more, the source being the Ministry of culture gives us the assurance that the data has been collected correctly.
