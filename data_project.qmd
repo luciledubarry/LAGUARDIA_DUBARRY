@@ -56,3 +56,50 @@ info_freq <- freq |>
 knitr::kable(info_freq, format = "html",col.names = c("Number of rows", "Number of columns"))
 ```
 
+## Description of each variable
+
+### 1st data set - Musée de France: base Muséofile:
+REF : Muséofile reference code ; 
+NOMOFF : Official name of the museum ; 
+AUTNOM : Customary name of the museum;
+ADRL1_M : Adress ; 
+LIEU_M : Specifications of the adress ; 
+CP_M : Postal code ;
+VILLE_M : City ; 
+DPT : Department ; 
+REGION : Region ; 
+URL_M : Website or page address ;  
+TEL_M : Phone number of the museum ; 
+CATEG: Specific museum category; 
+DOMPAL: Main themes of the collections; 
+HIST: History of the collection; 
+ATOUT: Assets of the collection; 
+THEMES: Details of the themes  of the collections; 
+ARTIST: Leading artists of the collection; 
+PHARE: Leading personalities of the collection;
+INTERET: Architectural feature of the building;
+PROT-BAT: Type of building preservation;
+PROT-ESP: Type of space preservation;
+REFMER: Reference code in the Mérimée database;
+AN-CREAT: Year of creation;
+DMAJ: Date of the last information update; Latitude; Longitude.
+
+### 2nd data set - Fréquentation des musées de France:
+REF_MUSEE: Museum reference code;
+NOM_DU_MUSEE: Museum official name;
+ANNEE: Year of update;
+REGIONS: Region;
+VILLE: City;
+DATE_APPELLATION: Date on which controlled museums receive the designation “Musées de France”, since February 2003
+PAYANT: Number of visits with paid entrance ticket;
+GRATUIT: Number of visits with free entrance ticket;
+TOTAL: Total of number of visits (PAYANT + GRATUIT);
+NOTE: indicates: 
+- "F": the museum is closed; 
+- "NC": no frequentation data have been provided; 
+- "R": withdrawal of the "Musées de France" designation.
+ID_MUSEOFILE: Muséofile reference code ; 
+NOMDEP: Department;
+OBSERVATIONS: Some sites communicate the cumulative frequentation for all the museums on the site. The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated (see "REF_MUSEE" column).
+
+
