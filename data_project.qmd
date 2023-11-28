@@ -1,6 +1,9 @@
 ---
 title: "Data Management Project"
 format: html
+message: false
+code-fold: true
+echo: false
 ---
 
 ```{r}
@@ -36,4 +39,20 @@ The advantage of gathering databases from the same website and the same institut
 The **"Musées de France: base Muséofile"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/musees-de-france-base-museofile/#/resources)
 
 The **"Fréquentations des musées de France"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/frequentation-des-musees-de-france-1/#/resources)
+
+## Short description of the data files
+
+In this table, you'll find some basic information about our first data file **"Musées de France: base Muséofile"**.
+
+```{r}
+info_museum <- museum |>
+  summarise(NROW(museum),NCOL(museum))
+knitr::kable(info_museum, format = "html",col.names = c("Number of rows (number of museums","Number of columns (characteristics)"))
+```
+In this other table, you'll find the same basic information for our second data file **"Fréquentations des musées de France"**.
+```{r}
+info_freq <- freq |>
+  summarise(NROW(freq), NCOL(freq))
+knitr::kable(info_freq, format = "html",col.names = c("Number of rows", "Number of columns"))
+```
 
