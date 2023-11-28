@@ -1,13 +1,13 @@
 ---
 title: "Data Management Project"
+author: Joséphine Laguardia and Lucile Dubarry
 format: html
-message: false
 code-fold: true
 echo: false
 ---
 
 ```{r}
-#| message : false 
+#| message: false
 here::i_am("LAGUARDIA_DUBARRY.Rproj")
 library(ggplot2)
 library(dplyr)
@@ -45,6 +45,7 @@ The **"Fréquentations des musées de France"** dataset is available [here](http
 In this table, you'll find some basic information about our first data file **"Musées de France: base Muséofile"**.
 
 ```{r}
+#| message : false 
 info_museum <- museum |>
   summarise(NROW(museum),NCOL(museum))
 knitr::kable(info_museum, format = "html",col.names = c("Number of rows (number of museums","Number of columns (characteristics)"))
@@ -138,15 +139,15 @@ ID_MUSEOFILE: Muséofile reference code ;
 
 NOMDEP: Department;
 
-OBSERVATIONS: Some sites communicate the cumulative frequentation for all the museums on the site. The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated (see "REF_MUSEE" column).
+OBSERVATIONS: The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated.
 
 ## Data cleaning and joining
 
 ### Year of interest: 2019
 
-The freq data set only includes Muséofile references starting from 2019. The years following 2019 are highly impacted by Covid crisis. We don't take into account these years in our study, as they are not representative of the museum usual frequentation. 
+The freq data set only includes Muséofile references starting from 2019. The years following 2019 are highly impacted by Covid crisis. We don't take into account these years in our study, as they are not representative of the museum's usual frequentation. 
 
-We use the “filter” function and select only the year 2019 for the freq data base.
+We use the “filter” function and select only the year **2019** for the freq data base.
 
 ```{r}
 freq <- freq |> filter(annee == 2019)
@@ -164,7 +165,8 @@ freq <- freq |> filter(is.na(note))
 
 Then, we only keep the variables of interest, and drop the rest. The variables that we keep are:
 
-1st data set Frequentation:
+**1st data set Frequentation:**
+
 ID_MUSEOFILE; 
 NOM_DU_MUSEE; 
 REGIONS; 
@@ -173,11 +175,12 @@ TOTAL;
 PAYANT; GRATUIT
 NOMDEP
 
-2nd data set Muséofile:
-REF
-DOMPAL
-ARTISTE
-PROT-ESP; PROT-BAT
+**2nd data set Muséofile:**
+
+REF;
+DOMPAL;
+ARTISTE;
+PROT-ESP; PROT-BAT;
 LATITUDE; LONGITUDE
 
 ```{r}
@@ -187,7 +190,7 @@ museum <- museum |> select(ref, dompal, artiste, prot_bat, prot_esp, latitude, l
 
 ### Data joining
 
-We join the data bases with reference to the Muséofile id number. On the Museofile data database it is the variable named REF and on the freq database it is the variable named ID_MUSEOFILE.
+We join the data bases with reference to the **Muséofile ID number**. On the Museofile database it is the variable named REF and on the Frequentation database it is the variable named ID_MUSEOFILE.
 
 We use the function "inner_join" as it allows us to keep only the museums for which we have all the information (the frequentation and the characteristics). 
 
@@ -200,26 +203,41 @@ data <- inner_join(freq, museum, by = 'id_museofile')
 
 ## Description of the research questions
 
-I.	Why this choice of topic?
+**I.	Why this choice of topic?**
 
 The selection of the research topic on museum frequentation in France stems from an interest in understanding the current landscape of museums in the country. Exploring the dynamics of museum frequentation is crucial for gaining insights into the factors influencing visitor numbers. The central question revolves around the present state of museums in France and the key characteristics that impact their attendance. 
 We want to put into perspective the link between museums’ frequentation and museums’ characteristics, whether it be their location, their category (history, art, etc…), or their main asset (the most famous artist in their collection for example). Do historical museums attract more visitors than art ones? Is a particular art theme more popular in France? Are the assets of a museum more important than its location when it comes to frequentation?
 
-II.	Main research axes based on the selected key variables
+**II.	Main research axes based on the selected key variables**
 
 The research will focus on several key factors. 
 
-1.	Firstly, we will study the diversity of museum themes in France, aiming to identify potential preferences among the public for specific thematic content. This will involve calculating cumulative frequentation figures for each theme. 
+1.	Firstly, we will study the **diversity** of museum themes in France, aiming to identify potential preferences among the public for specific thematic content. This will involve calculating cumulative frequentation figures for each theme. 
 
-2.	Secondly, we will analyze the geographical distribution of museums in France, categorizing regions based on cultural vitality, considering both the number of museums and attendance figures.
+2.	Secondly, we will analyze the **geographical distribution** of museums in France, categorizing regions based on cultural vitality, considering both the number of museums and attendance figures.
 
-3.	Additionally, we will study the primary collections and standout artists featured in each museum, and determine if this asset influences the frequentation of the museum. 
+3.	Additionally, we will study the primary collections and standout artists featured in each museum, and determine if this **asset** influences the frequentation of the museum. 
 
-Because of a lack of data, a year-by-year comparison of attendance is unfeasible, as the dataset only includes Muséofile references starting from 2019.
+Because of a lack of data, a year-by-year comparison of attendance is impossible, as the dataset only includes Muséofile references starting from 2019.
 
-III.	Expected results
+**III.	Expected results**
 
 The research will employ various methods to synthesize a comprehensive overview of the current museum landscape in France. This includes creating a visual representation, such as a map of France, depicting the number of museums, different thematic categories, and cumulative attendance figures by region. 
 
 Furthermore, the study aims to identify the primary factors contributing to museum attendance, expressing it conditionally through three key variables: location, theme, and collection. The expected results include a concrete understanding of the factors shaping museum frequentation, providing valuable insights for both cultural institutions and policymakers in France.
+
+## Graphical representation
+
+Here are all the museums of France on an interactive map, where we can get the name of the museum by clicking on the marker.
+```{r}
+#| message: false
+library(leaflet)
+```
+
+```{r}
+leaflet(data = data) %>% addTiles() %>%
+  addMarkers(~longitude, ~latitude, popup = ~as.character(nom_du_musee))
+```
+There are a lot of markers at first, but it becomes clearer and clearer as we zoom in. 
+This is not a perfect representation, but it is a first. As we continue our project, we will try to represent the density of museums by region or by department.
 
