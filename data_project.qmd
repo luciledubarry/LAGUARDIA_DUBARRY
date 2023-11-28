@@ -59,54 +59,92 @@ knitr::kable(info_freq, format = "html",col.names = c("Number of rows", "Number 
 ## Description of each variable
 
 ### 1st data set - Musée de France: base Muséofile:
-REF : Muséofile reference code ; 
-NOMOFF : Official name of the museum ; 
+REF : Muséofile reference code; 
+
+NOMOFF : Official name of the museum; 
+
 AUTNOM : Customary name of the museum;
-ADRL1_M : Adress ; 
-LIEU_M : Specifications of the adress ; 
-CP_M : Postal code ;
-VILLE_M : City ; 
-DPT : Department ; 
-REGION : Region ; 
-URL_M : Website or page address ;  
-TEL_M : Phone number of the museum ; 
-CATEG: Specific museum category; 
+
+ADRL1_M : Address; 
+
+LIEU_M : Specifications of the address; 
+
+CP_M : Postal code;
+
+VILLE_M : City;
+
+DPT : Department;
+
+REGION : Region;
+
+URL_M : Website or page address;
+
+TEL_M : Phone number of the museum;
+
+CATEG: Specific museum category;
+
 DOMPAL: Main themes of the collections; 
+
 HIST: History of the collection; 
+
 ATOUT: Assets of the collection; 
+
 THEMES: Details of the themes  of the collections; 
+
 ARTIST: Leading artists of the collection; 
+
 PHARE: Leading personalities of the collection;
+
 INTERET: Architectural feature of the building;
+
 PROT-BAT: Type of building preservation;
+
 PROT-ESP: Type of space preservation;
+
 REFMER: Reference code in the Mérimée database;
+
 AN-CREAT: Year of creation;
+
 DMAJ: Date of the last information update; Latitude; Longitude.
 
 ### 2nd data set - Fréquentation des musées de France:
-REF_MUSEE: Museum reference code;
-NOM_DU_MUSEE: Museum official name;
-ANNEE: Year of update;
+REF_MUSEE: Museum reference code; 
+
+NOM_DU_MUSEE: Museum official name; 
+
+ANNEE: Year of update; 
+
 REGIONS: Region;
+
 VILLE: City;
+
 DATE_APPELLATION: Date on which controlled museums receive the designation “Musées de France”, since February 2003
+
 PAYANT: Number of visits with paid entrance ticket;
+
 GRATUIT: Number of visits with free entrance ticket;
+
 TOTAL: Total of number of visits (PAYANT + GRATUIT);
+
 NOTE: indicates: 
+
 - "F": the museum is closed; 
+
 - "NC": no frequentation data have been provided; 
+
 - "R": withdrawal of the "Musées de France" designation.
+
 ID_MUSEOFILE: Muséofile reference code ; 
+
 NOMDEP: Department;
+
 OBSERVATIONS: Some sites communicate the cumulative frequentation for all the museums on the site. The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated (see "REF_MUSEE" column).
 
 ## Data cleaning and joining
 
 ### Year of interest: 2019
 
-The freq data set only includes Muséofile references starting from 2019. The years following 2019 are highly impacted by Covid crisis. Then we don't account into account their years in our study, as they are not representative of the museum usual frequentation. 
+The freq data set only includes Muséofile references starting from 2019. The years following 2019 are highly impacted by Covid crisis. We don't take into account these years in our study, as they are not representative of the museum usual frequentation. 
 
 We use the “filter” function and select only the year 2019 for the freq data base.
 
@@ -127,11 +165,11 @@ freq <- freq |> filter(is.na(note))
 Then, we only keep the variables of interest, and drop the rest. The variables that we keep are:
 
 1st data set Frequentation:
-ID_MUSEOFILE
-NOM_DU_MUSEE
-REGIONS
-VILLE
-TOTAL
+ID_MUSEOFILE; 
+NOM_DU_MUSEE; 
+REGIONS; 
+VILLE; 
+TOTAL; 
 PAYANT; GRATUIT
 NOMDEP
 
@@ -159,4 +197,29 @@ museum <- museum |> rename(id_museofile = ref)
 # now we can do the joining
 data <- inner_join(freq, museum, by = 'id_museofile')
 ```
+
+## Description of the research questions
+
+I.	Why this choice of topic?
+
+The selection of the research topic on museum frequentation in France stems from an interest in understanding the current landscape of museums in the country. Exploring the dynamics of museum frequentation is crucial for gaining insights into the factors influencing visitor numbers. The central question revolves around the present state of museums in France and the key characteristics that impact their attendance. 
+We want to put into perspective the link between museums’ frequentation and museums’ characteristics, whether it be their location, their category (history, art, etc…), or their main asset (the most famous artist in their collection for example). Do historical museums attract more visitors than art ones? Is a particular art theme more popular in France? Are the assets of a museum more important than its location when it comes to frequentation?
+
+II.	Main research axes based on the selected key variables
+
+The research will focus on several key factors. 
+
+1.	Firstly, we will study the diversity of museum themes in France, aiming to identify potential preferences among the public for specific thematic content. This will involve calculating cumulative frequentation figures for each theme. 
+
+2.	Secondly, we will analyze the geographical distribution of museums in France, categorizing regions based on cultural vitality, considering both the number of museums and attendance figures.
+
+3.	Additionally, we will study the primary collections and standout artists featured in each museum, and determine if this asset influences the frequentation of the museum. 
+
+Because of a lack of data, a year-by-year comparison of attendance is unfeasible, as the dataset only includes Muséofile references starting from 2019.
+
+III.	Expected results
+
+The research will employ various methods to synthesize a comprehensive overview of the current museum landscape in France. This includes creating a visual representation, such as a map of France, depicting the number of museums, different thematic categories, and cumulative attendance figures by region. 
+
+Furthermore, the study aims to identify the primary factors contributing to museum attendance, expressing it conditionally through three key variables: location, theme, and collection. The expected results include a concrete understanding of the factors shaping museum frequentation, providing valuable insights for both cultural institutions and policymakers in France.
 
