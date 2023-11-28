@@ -102,4 +102,49 @@ ID_MUSEOFILE: Muséofile reference code ;
 NOMDEP: Department;
 OBSERVATIONS: Some sites communicate the cumulative frequentation for all the museums on the site. The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated (see "REF_MUSEE" column).
 
+## Data cleaning and joining
+
+### Year of interest: 2019
+
+The freq data set only includes Muséofile references starting from 2019. The years following 2019 are highly impacted by Covid crisis. Then we don't account into account their years in our study, as they are not representative of the museum usual frequentation. 
+
+We use the “filter” function and select only the year 2019 for the freq data base.
+
+```{r}
+freq <- freq |> filter(annee == 2019)
+```
+
+### Selecting variables of interest
+
+First, we get rid of museums that don't have the frequentation data, represented by the variable NOTE (when either the museum is closed or the information is partially completed). 
+
+So, we only select the museums whose NOTE variable is empty. 
+
+```{r}
+freq <- freq |> filter(is.na(note))
+```
+
+Then, we only keep the variables of interest, and drop the rest. The variables that we keep are:
+
+1st data set Frequentation:
+ID_MUSEOFILE
+NOM_DU_MUSEE
+REGIONS
+VILLE
+TOTAL
+PAYANT; GRATUIT
+NOMDEP
+
+2nd data set Muséofile:
+NOMOFF
+DOMPAL
+ARTISTE
+PROT-ESP; PROT-BAT
+LATITUDE; LONGITUDE
+
+```{r}
+freq <- freq |> select(id_museofile, nom_du_musee, regions, ville, total, payant, gratuit, nomdep)
+museum <- museum |> select(nomoff, dompal, artiste, prot_bat, prot_esp, latitude, longitude)
+```
+
 
