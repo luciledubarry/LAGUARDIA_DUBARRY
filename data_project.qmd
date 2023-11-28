@@ -136,7 +136,7 @@ PAYANT; GRATUIT
 NOMDEP
 
 2nd data set Muséofile:
-NOMOFF
+REF
 DOMPAL
 ARTISTE
 PROT-ESP; PROT-BAT
@@ -144,7 +144,19 @@ LATITUDE; LONGITUDE
 
 ```{r}
 freq <- freq |> select(id_museofile, nom_du_musee, regions, ville, total, payant, gratuit, nomdep)
-museum <- museum |> select(nomoff, dompal, artiste, prot_bat, prot_esp, latitude, longitude)
+museum <- museum |> select(ref, dompal, artiste, prot_bat, prot_esp, latitude, longitude)
 ```
 
+### Data joining
+
+We join the data bases with reference to the Muséofile id number. On the Museofile data database it is the variable named REF and on the freq database it is the variable named ID_MUSEOFILE.
+
+We use the function "inner_join" as it allows us to keep only the museums for which we have all the information (the frequentation and the characteristics). 
+
+```{r}
+# first, they have to have the same variable name
+museum <- museum |> rename(id_museofile = ref)
+# now we can do the joining
+data <- inner_join(freq, museum, by = 'id_museofile')
+```
 
