@@ -15,3 +15,26 @@ library(tidyr)
 library(vroom)
 library(here)
 ```
+
+```{r}
+#| message: false
+museum <- vroom(here("musees-de-france-base-museofile.csv"))
+freq <- vroom(here("frequentation-des-musees-de-france.csv"))
+```
+
+```{r}
+freq <- freq |> filter(annee == 2019)
+freq <- freq |> filter(is.na(note))
+```
+
+```{r}
+freq <- freq |> select(id_museofile, nom_du_musee, regions, ville, total, payant, gratuit, nomdep)
+museum <- museum |> select(ref, dompal, artiste, prot_bat, prot_esp, latitude, longitude)
+```
+
+```{r}
+museum <- museum |> rename(id_museofile = ref)
+data <- inner_join(freq, museum, by = 'id_museofile')
+```
+
+
