@@ -1,0 +1,17 @@
+---
+title: "Data Management Project: Museum frequentation"
+author: Joséphine Laguardia and Lucile Dubarry
+format: html
+code-fold: true
+echo: false
+---
+
+```{r}
+#| message: false
+here::i_am("LAGUARDIA_DUBARRY.Rproj")
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(vroom)
+library(here)
+```
