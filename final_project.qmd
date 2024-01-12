@@ -584,3 +584,45 @@ We also notice a significant difference between the total attendance of Science 
 We can therefore conclude that the most popular museum theme in France is Art, followed very closely by History, a result largely due to the high attendance rates of museums classified in both the History and Art categories.
 
 
+### Impact of location on attendance
+
+Knowing what we now discovered, multiple questions can be asked. First, what is the impact of location on museums' attendance ? What we mean by location is two possible variables : the museum being located in one of the 10 biggest cities (or not) and the museum being located in Paris (or not). Let's study the first case.
+
+** The impact of being located in one of the 10 biggest cities on museums' attendance**
+
+The relation that we are looking for is of this form:
+
+Attendance = b0 + b1*City
+
+```{r first regression}
+first_regression <- lm(total ~ city, data = data_expanded)
+summary(first_regression)
+```
+
+From this regression, we can say that the average number of visitors per year for a museum not located in one of the 10 biggest cities is estimated to be 36495. For a museum located in one of those cities, on the other hand, it is estimated to be 36495 + 316357, which is equal to: `r 36495 + 316357` visitors. 
+
+```{r}
+plot(data_expanded$city, data_expanded$total, main = "Link between being located in a big city and museums attendance", xlab = "Located in one of the 10 biggest cities", ylab = "Total visits in a year", xaxt = "n")
+abline(first_regression, col = "red")
+axis(1, at = 0:1)
+```
+
+** The impact of being located in Paris on museums' attendance**
+
+The relation that we are looking for is of this form:
+
+Attendance = b0 + b1*Paris
+
+```{r second regression}
+second_regression <- lm(total ~ PARIS, data = data_expanded)
+summary(second_regression)
+```
+
+From this regression, we can say that the average number of visitors per year for a museum not located in Paris is estimated to be 41174. For a museum located in Paris, on the other hand, it is estimated to be 41174 + 604 5000, which is equal to: `r 41174 + 6045000` visitors. 
+
+```{r}
+plot(data_expanded$city, data_expanded$total, main = "Link between being located in Paris and museums attendance", xlab = "Located in Paris", ylab = "Total visits", xaxt = "n")
+abline(second_regression, col = "blue")
+axis(1, at = 0:1)
+```
+
