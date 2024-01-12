@@ -1,7 +1,8 @@
 ---
-title: "Data Management Project: Museum frequentation"
+title: "Data Management Project: Location's impact on museum attendance"
 author: Joséphine Laguardia and Lucile Dubarry
-format: html
+format: 
+  wordcount-html: default
 code-fold: true
 echo: false
 ---
@@ -28,4 +29,123 @@ museum <- museum |> rename(id_museofile = ref)
 data <- inner_join(freq, museum, by = 'id_museofile')
 ```
 
+# Research question
+
+# Data sets description
+
+# Data analysis
+
+## Descriptive statistics
+
+### Geographical distribution
+
+  In this sub-section, we want to represent visually the cultural vitality of France and its regions.
+  
+  First, let's take a look into the number of museums in each region, and the corresponding percentage in regards to the whole country.
+
+```{r}
+#| message : false
+vitality1 <- summarise(data |>
+            group_by(regions),
+            number = n(), 
+            percentage = round(100*n()/1016,1))
+knitr::kable(vitality1,
+            col.names = c("Regions","Number of museums","Percentage of museums"))
+```
+
+  Multiple points are to be made here. With no surprise, "Île-de-France" is the most dynamic in terms of cultural vitality, with `r vitality1[10,2]` museums, corresponding to `r vitality1[10,3]` % of French museums. Paris being the capital of France, and the most visited city in the world, with more than 30 millions visitors per year, this result is understandable. To add another expected result, the biggest regions (in terms of surface area) are also very dynamic: Auvergne-Rhone-Alpes, Grand Est and Occitanie have the largest number of museums after Île-de-France. What is more surprising is Nouvelle-Aquitaine: it is the biggest region in France, and only includes around `r vitality1[14,3]` % of total museums in France. 
+
+  Then, let's do the same process but in regards to the cumulative number of visits in each region, and the corresponding percentage.
+
+```{r}
+total_visits <- sum(data$total, na.rm = TRUE)
+
+vitality2 <- summarise(data |>
+            group_by(regions),
+            cumulative = sum(total, na.rm = TRUE), 
+            percentage2 = round(100*cumulative/total_visits,1))
+
+knitr::kable(vitality2,
+            col.names = c("Regions","Number of visits","Percentage"))
+```
+
+  This table shows us the cultural power of the "Île-de-France" region. With only `r vitality1[10,3]` % of total french museums, this region captures almost 60% of total visitors in France. The region completely crushes the others' percentages. Nevertheless, we find again the biggest regions : Auvergne-Rhones-Alpes (`r vitality2[1,3]` %), Provence-Alpes-Côte d'Azur (`r vitality2[17,3]` %), Grand Est (`r vitality2[6,3]` %), and Occitanie (`r vitality2[15,3]` %).
+  
+  In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side.
+
+```{r}
+# we merge our two data frames
+vit <- merge(vitality1,vitality2)
+vit <- select(vit, - number, - cumulative)
+# we rename the variables (for future aesthetic uses)
+vit <- rename(vit, "% of total museums" = "percentage", "% of total visits" = "percentage2")
+# we pivot longer (to represent both variables in a grouped way)
+vit_long <- pivot_longer(vit, cols = c("% of total museums","% of total visits"), names_to = "Percentages")
+# graph
+gg <- ggplot(vit_long, aes(x= regions, y= value, fill = Percentages)) +
+  geom_col(position = "dodge") +
+  xlab("Regions") +
+  ylab("Cultural vitality") +
+  theme(axis.title = element_text(size = 15,
+                                  color = "purple",
+                                  face = "bold")) +
+  scale_fill_hue(h = c(180, 270))
+gg + coord_flip()
+```
+[description]
+
+To go even further, we wanted to represent this cultural vitality on a map of France (because why not ?).
+
+
+```{r}
+#| message: false
+# the packages we need 
+library(sf)
+library(tmap)
+library(rmapshaper)
+```
+
+In order to do this, we had to introduce a new data base. This data base comes from the same source as our main bases, and includes French administrative boundaries at regional level (regional contours) from OpenStreetMap.
+The *Contours des régions françaises sur OpenStreetMap* dataset is available [here](https://www.data.gouv.fr/fr/datasets/contours-des-regions-francaises-sur-openstreetmap/#_)
+
+```{r}
+# we introduce a new data base 
+regions <- read_sf("regions-20180101-shp/")
+```
+
+```{r}
+#| message: false
+# merging the data bases
+vitality <- merge(vitality1,vitality2)
+# ordering in alphabetical order (so that each data base has the same order)
+regions <- regions[order(regions$nom),,]
+vitality <- vitality[order(vitality$regions),,]
+# deleting the rows that weren't common to both data base
+regions <- filter(regions, nom != "Mayotte")
+vitality <- filter(vitality, regions != "ST PIERRE ET MIQUELON")
+# creating an index (to facilitate the joining)
+id <- as.character(1:17)
+regions <- cbind(regions, id)
+vitality <- cbind(vitality, id)
+# joining the data bases 
+regions_vitality <- full_join(regions,vitality, by = "id")
+```
+
+Here it is:
+
+```{r}
+#| message: false
+# rename the variable (for future aesthetic purposes)
+regions_vitality <- rename(regions_vitality, "Name of the region" = "nom")
+
+regions1 <- ms_simplify(regions_vitality)
+plot <- ggplot(regions1)+
+  geom_sf(aes(fill= `Name of the region`))+
+  coord_sf(xlim = c(-5.5,10),ylim=c(41,51))+
+  theme_void() +
+  geom_sf_label(aes(label = number))
+plot + labs(title = "Cultural vitality in France", subtitle = "Number of museums in each french region")
+```
+
+Unfortunately, we were unable to represent the French overseas regions on this map. 
 
