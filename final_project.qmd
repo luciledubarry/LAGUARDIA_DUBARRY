@@ -18,10 +18,145 @@ library(stringr)
 library(scales)
 ```
 
-```{r cleaning and merging}
+```{r loading}
 #| message: false
 museum <- vroom(here("musees-de-france-base-museofile.csv"))
 freq <- vroom(here("frequentation-des-musees-de-france.csv"))
+```
+
+# Research question
+
+The selection of the research topic on museum attendance in France stems from an interest in understanding the current landscape of museums in the country. Exploring the dynamics of museum attendance is crucial for gaining insights into the factors influencing visitor numbers. The central question revolves around the present state of museums in France and the key characteristics that impact their attendance. 
+
+We want to put into perspective the link between museums’ attendance and museums’ characteristics, whether it be their location or their category (history, art, etc…). The main question that we ask ourselves is : What is the impact of location on museums’ attendance ? More precisely, how much being located in a big city affects attendance numbers ?  And to add to it, does a link exist between attendance numbers and the category of the museum ?
+We’ll try to answer these questions in this project.
+
+
+# Data sets description
+## Sources
+
+Both our data sets come from the **French Ministry of culture**. Since 2011, the Ministry of culture has set up both a public data census service and a data sharing service, open to all citizens, researchers, students, journalists, and companies. Its aim is to improve the exposure of cultural works and French cultural institutions. Even though it is a legal obligation since 2018 for administrations to open up their data, there are a lot of benefits from sharing these data: full transparency with the citizens, support for social innovations, boosting the local economy through discovering local cultural institutions, boosting France international influence etc.
+
+Our first data set, **"Musées de France: base Muséofile"**, features all the museums that have been given the "Musée de France" label by the *Code du Patrimoine*. A "Musée de France" is, in accordance with the *Code du Patrimoine*, a "permanent collection made up of items whose conservation and presentation are of public interest, and organized for the knowledge, education and enjoyment of the public". As we'll see later, it contains basic information on these museums (such as the address, the website or the year of creation), as well as interesting complementary characteristics (such as the main theme of the museum, its most important asset or the leading artist of its permanent collection).
+
+Our second data set, **"Fréquentation des musées de France"**, contains the number of visitors each year, from 2001 to 2021.
+
+The advantage of gathering databases from the same website and the same institution of origin is that the merging will be a lot easier, due to the fact that they have variables in common. What's more, the source being the Ministry of culture gives us the assurance that the data has been collected correctly.
+
+The **"Musées de France: base Muséofile"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/musees-de-france-base-museofile/#/resources)
+
+The **"Fréquentations des musées de France"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/frequentation-des-musees-de-france-1/#/resources)
+
+## Size 
+
+```{r}
+#| message : false 
+info_museum <- museum |>
+  summarise(
+    data_base = "Museum data base",
+    rows = NROW(museum),
+    columns = NCOL(museum))
+info_freq <- freq |>
+  summarise(
+    data_base = "Attendance data base",
+    rows = NROW(freq), 
+    columns = NCOL(freq))
+
+infos <- rbind(info_museum,info_freq)
+
+knitr::kable(infos, format = "html",col.names = c("Data base", "Number of rows","Number of columns"))
+
+```
+
+## Variables
+### 1st data set - Musée de France: base Muséofile:
+REF : Muséofile reference code; 
+
+NOMOFF : Official name of the museum; 
+
+AUTNOM : Customary name of the museum;
+
+ADRL1_M : Address; 
+
+LIEU_M : Specifications of the address; 
+
+CP_M : Postal code;
+
+VILLE_M : City;
+
+DPT : Department;
+
+REGION : Region;
+
+URL_M : Website or page address;
+
+TEL_M : Phone number of the museum;
+
+CATEG: Specific museum category;
+
+DOMPAL: Main themes of the collections; 
+
+HIST: History of the collection; 
+
+ATOUT: Assets of the collection; 
+
+THEMES: Details of the themes  of the collections; 
+
+ARTIST: Leading artists of the collection; 
+
+PHARE: Leading personalities of the collection;
+
+INTERET: Architectural feature of the building;
+
+PROT-BAT: Type of building preservation;
+
+PROT-ESP: Type of space preservation;
+
+REFMER: Reference code in the Mérimée database;
+
+AN-CREAT: Year of creation;
+
+DMAJ: Date of the last information update; Latitude; Longitude.
+
+### 2nd data set - Fréquentation des musées de France:
+REF_MUSEE: Museum reference code; 
+
+NOM_DU_MUSEE: Museum official name; 
+
+ANNEE: Year of update; 
+
+REGIONS: Region;
+
+VILLE: City;
+
+DATE_APPELLATION: Date on which controlled museums receive the designation “Musées de France”, since February 2003
+
+PAYANT: Number of visits with paid entrance ticket;
+
+GRATUIT: Number of visits with free entrance ticket;
+
+TOTAL: Total of number of visits (PAYANT + GRATUIT);
+
+NOTE: indicates: 
+
+- "F": the museum is closed; 
+
+- "NC": no frequentation data have been provided; 
+
+- "R": withdrawal of the "Musées de France" designation.
+
+ID_MUSEOFILE: Muséofile reference code ; 
+
+NOMDEP: Department;
+
+OBSERVATIONS: The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated.
+
+
+# Data analysis
+
+## Descriptive statistics
+
+```{r merging and cleaning}
 freq <- freq |> filter(annee == 2019)
 freq <- freq |> filter(is.na(note))
 freq <- freq |> select(id_museofile, nom_du_musee, regions, ville, total, payant, gratuit, nomdep)
@@ -30,19 +165,11 @@ museum <- museum |> rename(id_museofile = ref)
 data <- inner_join(freq, museum, by = 'id_museofile')
 ```
 
-# Research question
-
-# Data sets description
-
-# Data analysis
-
-## Descriptive statistics
-
 ### Geographical distribution
 
-  In this sub-section, we want to represent visually the cultural vitality of France and its regions.
-  
-  First, let's take a look into the number of museums in each region, and the corresponding percentage in regards to the whole country.
+In this sub-section, we want to represent visually the cultural vitality of France and its regions.
+
+First, let's take a look into the number of museums in each region, and the corresponding percentage in regards to the whole country.
 
 ```{r}
 #| message : false
@@ -54,9 +181,9 @@ knitr::kable(vitality1,
             col.names = c("Regions","Number of museums","Percentage of museums"))
 ```
 
-  Multiple points are to be made here. With no surprise, "Île-de-France" is the most dynamic in terms of cultural vitality, with `r vitality1[10,2]` museums, corresponding to `r vitality1[10,3]` % of French museums. Paris being the capital of France, and the most visited city in the world, with more than 30 millions visitors per year, this result is understandable. To add another expected result, the biggest regions (in terms of surface area) are also very dynamic: Auvergne-Rhone-Alpes, Grand Est and Occitanie have the largest number of museums after Île-de-France. What is more surprising is Nouvelle-Aquitaine: it is the biggest region in France, and only includes around `r vitality1[14,3]` % of total museums in France. 
+Multiple points are to be made here. With no surprise, "Île-de-France" is the most dynamic in terms of cultural vitality, with `r vitality1[10,2]` museums, corresponding to `r vitality1[10,3]` % of French museums. Paris being the capital of France, and the most visited city in the world, with more than 30 millions visitors per year, this result is understandable. To add another expected result, the biggest regions (in terms of surface area) are also very dynamic: Auvergne-Rhone-Alpes, Grand Est and Occitanie have the largest number of museums after Île-de-France. What is more surprising is Nouvelle-Aquitaine: it is the biggest region in France, and only includes around `r vitality1[14,3]` % of total museums in France.
 
-  Then, let's do the same process but in regards to the cumulative number of visits in each region, and the corresponding percentage.
+Then, let's do the same process but in regards to the cumulative number of visits in each region, and the corresponding percentage.
 
 ```{r}
 total_visits <- sum(data$total, na.rm = TRUE)
@@ -71,9 +198,9 @@ knitr::kable(vitality2,
             col.names = c("Regions","Number of visits","Percentage"))
 ```
 
-  This table shows us the cultural power of the "Île-de-France" region. With only `r vitality1[10,3]` % of total french museums, this region captures almost 60% of total visitors in France. The region completely crushes the others' percentages. Nevertheless, we find again the biggest regions : Auvergne-Rhones-Alpes (`r vitality2[1,3]` %), Provence-Alpes-Côte d'Azur (`r vitality2[17,3]` %), Grand Est (`r vitality2[6,3]` %), and Occitanie (`r vitality2[15,3]` %).
-  
-  In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side.
+This table shows us the cultural power of the "Île-de-France" region. With only `r vitality1[10,3]` % of total french museums, this region captures almost 60% of total visitors in France. The region completely crushes the others' percentages. Nevertheless, we find again the biggest regions : Auvergne-Rhones-Alpes (`r vitality2[1,3]` %), Provence-Alpes-Côte d'Azur (`r vitality2[17,3]` %), Grand Est (`r vitality2[6,3]` %), and Occitanie (`r vitality2[15,3]` %).
+
+In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side.
 
 ```{r}
 # we merge our two data frames
@@ -94,10 +221,10 @@ gg <- ggplot(vit_long, aes(x= regions, y= value, fill = Percentages)) +
   scale_fill_hue(h = c(180, 270))
 gg + coord_flip()
 ```
-[description]
+
+\[description\]
 
 To go even further, we wanted to represent this cultural vitality on a map of France (because why not ?).
-
 
 ```{r}
 #| message: false
@@ -107,8 +234,7 @@ library(tmap)
 library(rmapshaper)
 ```
 
-In order to do this, we had to introduce a new data base. This data base comes from the same source as our main bases, and includes French administrative boundaries at regional level (regional contours) from OpenStreetMap.
-The *Contours des régions françaises sur OpenStreetMap* dataset is available [here](https://www.data.gouv.fr/fr/datasets/contours-des-regions-francaises-sur-openstreetmap/#_)
+In order to do this, we had to introduce a new data base. This data base comes from the same source as our main bases, and includes French administrative boundaries at regional level (regional contours) from OpenStreetMap. The *Contours des régions françaises sur OpenStreetMap* dataset is available [here](https://www.data.gouv.fr/fr/datasets/contours-des-regions-francaises-sur-openstreetmap/#_)
 
 ```{r}
 # we introduce a new data base 
@@ -149,15 +275,15 @@ plot <- ggplot(regions1)+
 plot + labs(title = "Cultural vitality in France", subtitle = "Number of museums in each french region")
 ```
 
-Unfortunately, we were unable to represent the French overseas regions on this map. 
+Unfortunately, we were unable to represent the French overseas regions on this map.
 
-## Second characteristic of the museums: their themes
+### Second characteristic of the museums: their themes
 
-### Regroup museum theme into main categories
+**Regroup museum theme into main categories**
 
 To facilitate the analysis, we decided to recategorize the variable dompal, so as to classify the museums into three categories that seem to us to be particularly distinct from each other, and which well characterize the type of museum: Art, History and Science. We construct the classification in such a way that museums can have several categories.
 
-The Art category includes themes such as Beaux-arts, Art moderne, Arts décoratifs, etc. The History category consists of Histoire, Archéologie, Ethnologie, etc. Finally, the Science category is composed of Technique et industrie, Sciences fondamentales and Sciences de la nature. 
+The Art category includes themes such as Beaux-arts, Art moderne, Arts décoratifs, etc. The History category consists of Histoire, Archéologie, Ethnologie, etc. Finally, the Science category is composed of Technique et industrie, Sciences fondamentales and Sciences de la nature.
 
 ```{r}
 category <- function(dompal) {
@@ -186,19 +312,20 @@ data$category <- sapply(data$dompal, category)
 ```{r}
 NA_count <- data |> filter(is.na(category))
 ```
-`r count(NA_count)|>pull(n)` museums does not indicate a specific theme, then they will not be taken into account in the following representations. 
 
-### Diversity of museum theme at the national scale
+`r count(NA_count)|>pull(n)` museums does not indicate a specific theme, then they will not be taken into account in the following representations.
 
-We study the diversity of museum subjects in France, by representing the distribution of the number of museums in each categories. 
+**Diversity of museum theme at the national scale**
 
-We first study museum theme as a combination of categories (a museum type is composed between one and three categories), then we consider categories individually to determine the most frequent museum type in France. 
+We study the diversity of museum subjects in France, by representing the distribution of the number of museums in each categories.
 
-The following graph show the number of museums by category, keeping the categories as a group. 
+We first study museum theme as a combination of categories (a museum type is composed between one and three categories), then we consider categories individually to determine the most frequent museum type in France.
+
+The following graph show the number of museums by category, keeping the categories as a group.
 
 ```{r}
 data |> filter(!is.na(category)) |> ggplot(aes(x = category)) +
-  geom_bar() +
+  geom_bar(fill = "darkgreen") +
   labs(title = "Distribution of museum theme at the national scale",
        x = "Categories",
        y = "Number of museums") +
@@ -213,11 +340,12 @@ perc1 <- data |>
   mutate(percentage = round(percentage, 2))
 ```
 
-The most frequent group of museum categories in France is History and Art. With `r perc1$n` museums in this category, it represents `r perc1$percentage`% of the total number of museums in France. 
+The most frequent group of museum categories in France is History and Art. With `r perc1$n` museums in this category, it represents `r perc1$percentage`% of the total number of museums in France.
 
-To determine the most frequent museum type, we will represent the number of museums in each category by considering the categories individually. In the following section, we have made the significant choice of considering that, since some museums have several different categories, they will be counted in each category in which they appear. 
+To determine the most frequent museum type, we will represent the number of museums in each category by considering the categories individually. In the following section, we have made the significant choice of considering that, since some museums have several different categories, they will be counted in each category in which they appear.
 
 ```{r}
+library(stringr)
 data_expanded <- data |> filter(!is.na(category)) |>
   mutate(category = str_split(category, ", ")) |>
   unnest(category)
@@ -227,7 +355,7 @@ category_count <- data_expanded |>
   summarise(total_museums = n())
 
 ggplot(category_count, aes(x = category, y = total_museums)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = "purple") +
   labs(title = "Distribution of museum theme (considering categories individually)",
        x = "Categories",
        y = "Number of museums")
@@ -242,13 +370,14 @@ category_count <- category_count |>
 
 knitr::kable(category_count, col.names = c("Category","Number of museums","Proportion of museums indicating this category"))
 ```
-We read the result as, for example, `r category_count[1,3]` of museums in France indicate the Art category (possibly among other categories). With `r category_count[2,3]` of the museums indicating History in their description, this is the most common type of museum in France, in terms of number of museums. 
 
-Therefore, the most frequent category, when considering the categories individually is History, followed by Art. There is also a significant drop for Science museums, compared to the two other categories. However, we should keep in mind when analyzing the results that categories are often linked to each others, particularly History and Art. 
+We read the result as, for example, `r category_count[1,3]` of museums in France indicate the Art category (possibly among other categories). With `r category_count[2,3]` of the museums indicating History in their description, this is the most common type of museum in France, in terms of number of museums.
 
-### Frequentation records depending on the museum type
+Therefore, the most frequent category, when considering the categories individually is History, followed by Art. There is also a significant drop for Science museums, compared to the two other categories. However, we should keep in mind when analyzing the results that categories are often linked to each others, particularly History and Art.
 
-We now focus on the attendance records depending on the type of museums, by representing the total frequentation for each categories. 
+**Frequentation records depending on the museum type**
+
+We now focus on the attendance records depending on the type of museums, by representing the total frequentation for each categories.
 
 In the same way as in the previous section, we separate our analysis by studying the museum theme as a combination of categories and by considering the categories individually.
 
@@ -276,7 +405,7 @@ perc2 <- data |>
   mutate(percentage = round(percentage, 2))
 ```
 
-Visitors is not an evenly distributed asset! One category of museum (History and Art) is significantly ahead of the others in terms of attendance records, with `r perc2$total` visitors in 2019 which represents `r perc2$percentage`% of the total frequentation. 
+Visitors is not an evenly distributed asset! One category of museum (History and Art) is significantly ahead of the others in terms of attendance records, with `r perc2$total` visitors in 2019 which represents `r perc2$percentage`% of the total frequentation.
 
 ```{r}
 perc3 <- data |>
@@ -290,7 +419,7 @@ perc4 <- data |>
   mutate(total = scales::comma(total))
 ```
 
-Although this category is the most widespread in France, with `r perc1$n` museums classified as History and Art, this attendance record is particularly high, compared with those of other categories. The other most common categories do not achieve the same attendance figures. The category History shows a major difference between the number of museums and the frequentation track: `r perc3` museums are listed as being exclusively of the History type (representing the third most frequent museum type), but its frequentation record is in fourth place, with `r perc4` visitors in 2019. 
+Although this category is the most widespread in France, with `r perc1$n` museums classified as History and Art, this attendance record is particularly high, compared with those of other categories. The other most common categories do not achieve the same attendance figures. The category History shows a major difference between the number of museums and the frequentation track: `r perc3` museums are listed as being exclusively of the History type (representing the third most frequent museum type), but its frequentation record is in fourth place, with `r perc4` visitors in 2019.
 
 ```{r}
 freq_count <- data_expanded |>
@@ -317,9 +446,10 @@ knitr::kable(freq_count, col.names = c("Category","Total frequentation","Proport
 
 Looking at the categories individually, we observe that Art museums leads the way in terms of attendance record, with `r freq_count[1,3]` of the visits in 2019 to museums featuring Art in their description. Although Art museums are not the most common type of museum in France (behind History museums), total attendance for this type exceeds that of History museums in 2019. Visitor numbers for History museums remain close, with `r freq_count[2,3]` of visits to museums classified as History.
 
-It should be noted that frequentation between these two categories is highly interrelated, as museums categorized as both History and Art being the most prominent in France, both in terms of numbers of museums and attendance. 
+It should be noted that frequentation between these two categories is highly interrelated, as museums categorized as both History and Art being the most prominent in France, both in terms of numbers of museums and attendance.
 
-We also notice a significant difference between the total attendance of Science museums and that of the other two categories, with only `r freq_count[3,3]` of visits concerning museums classified as Science. 
+We also notice a significant difference between the total attendance of Science museums and that of the other two categories, with only `r freq_count[3,3]` of visits concerning museums classified as Science.
 
 We can therefore conclude that the most popular museum theme in France is Art, followed very closely by History, a result largely due to the high attendance rates of museums classified in both the History and Art categories.
+
 
