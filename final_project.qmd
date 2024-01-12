@@ -1,8 +1,7 @@
 ---
 title: "Data Management Project: Location's impact on museum attendance"
 author: Joséphine Laguardia and Lucile Dubarry
-format: 
-  wordcount-html: default
+format: html
 code-fold: true
 echo: false
 ---
@@ -15,6 +14,8 @@ library(dplyr)
 library(tidyr)
 library(vroom)
 library(here)
+library(stringr)
+library(scales)
 ```
 
 ```{r cleaning and merging}
@@ -63,7 +64,8 @@ total_visits <- sum(data$total, na.rm = TRUE)
 vitality2 <- summarise(data |>
             group_by(regions),
             cumulative = sum(total, na.rm = TRUE), 
-            percentage2 = round(100*cumulative/total_visits,1))
+            percentage2 = round(100*cumulative/total_visits,1)) |>
+  mutate(cumulative = scales::comma(cumulative))
 
 knitr::kable(vitality2,
             col.names = c("Regions","Number of visits","Percentage"))
@@ -148,4 +150,176 @@ plot + labs(title = "Cultural vitality in France", subtitle = "Number of museums
 ```
 
 Unfortunately, we were unable to represent the French overseas regions on this map. 
+
+## Second characteristic of the museums: their themes
+
+### Regroup museum theme into main categories
+
+To facilitate the analysis, we decided to recategorize the variable dompal, so as to classify the museums into three categories that seem to us to be particularly distinct from each other, and which well characterize the type of museum: Art, History and Science. We construct the classification in such a way that museums can have several categories.
+
+The Art category includes themes such as Beaux-arts, Art moderne, Arts décoratifs, etc. The History category consists of Histoire, Archéologie, Ethnologie, etc. Finally, the Science category is composed of Technique et industrie, Sciences fondamentales and Sciences de la nature. 
+
+```{r}
+category <- function(dompal) {
+  categories <- character()
+
+  if (grepl("Ethnologie|Archéologie|Histoire|esclavage", dompal, ignore.case = TRUE)) {
+    categories <- c(categories, "History")
+  }
+  if (grepl("Art moderne et contemporain|Beaux-Arts|Arts décoratifs|Littérature|Musique|Photographie|Arts de l'Islam|Mode et textile|musique", dompal, ignore.case = TRUE)) {
+    categories <- c(categories, "Art")
+  }
+  if (grepl("Sciences de la nature|Technique et industrie|Sciences fondamentales", dompal, ignore.case = TRUE)) {
+    categories <- c(categories, "Science")
+  }
+
+  if (length(categories) == 0) {
+    return(dompal)
+  } else {
+    return(paste(categories, collapse = ", "))
+  }
+}
+
+data$category <- sapply(data$dompal, category)
+```
+
+```{r}
+NA_count <- data |> filter(is.na(category))
+```
+`r count(NA_count)|>pull(n)` museums does not indicate a specific theme, then they will not be taken into account in the following representations. 
+
+### Diversity of museum theme at the national scale
+
+We study the diversity of museum subjects in France, by representing the distribution of the number of museums in each categories. 
+
+We first study museum theme as a combination of categories (a museum type is composed between one and three categories), then we consider categories individually to determine the most frequent museum type in France. 
+
+The following graph show the number of museums by category, keeping the categories as a group. 
+
+```{r}
+data |> filter(!is.na(category)) |> ggplot(aes(x = category)) +
+  geom_bar() +
+  labs(title = "Distribution of museum theme at the national scale",
+       x = "Categories",
+       y = "Number of museums") +
+  coord_flip()
+```
+
+```{r}
+perc1 <- data |>
+  filter(category == "History, Art") |>
+  summarize(n = n()) |>
+  mutate(percentage = n / nrow(data) * 100) |>
+  mutate(percentage = round(percentage, 2))
+```
+
+The most frequent group of museum categories in France is History and Art. With `r perc1$n` museums in this category, it represents `r perc1$percentage`% of the total number of museums in France. 
+
+To determine the most frequent museum type, we will represent the number of museums in each category by considering the categories individually. In the following section, we have made the significant choice of considering that, since some museums have several different categories, they will be counted in each category in which they appear. 
+
+```{r}
+data_expanded <- data |> filter(!is.na(category)) |>
+  mutate(category = str_split(category, ", ")) |>
+  unnest(category)
+
+category_count <- data_expanded |>
+  group_by(category) |>
+  summarise(total_museums = n())
+
+ggplot(category_count, aes(x = category, y = total_museums)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of museum theme (considering categories individually)",
+       x = "Categories",
+       y = "Number of museums")
+```
+
+The following table shows the percentage of museums that include the category in their description, relative to the total number of museums in France.
+
+```{r}
+category_count <- category_count |> 
+  mutate(perc = total_museums/nrow(data)*100) |>
+  mutate(perc = scales::percent(perc, scale = 1))
+
+knitr::kable(category_count, col.names = c("Category","Number of museums","Proportion of museums indicating this category"))
+```
+We read the result as, for example, `r category_count[1,3]` of museums in France indicate the Art category (possibly among other categories). With `r category_count[2,3]` of the museums indicating History in their description, this is the most common type of museum in France, in terms of number of museums. 
+
+Therefore, the most frequent category, when considering the categories individually is History, followed by Art. There is also a significant drop for Science museums, compared to the two other categories. However, we should keep in mind when analyzing the results that categories are often linked to each others, particularly History and Art. 
+
+### Frequentation records depending on the museum type
+
+We now focus on the attendance records depending on the type of museums, by representing the total frequentation for each categories. 
+
+In the same way as in the previous section, we separate our analysis by studying the museum theme as a combination of categories and by considering the categories individually.
+
+```{r}
+data |> filter(!is.na(total)) |> filter(!is.na(category)) |>
+  group_by(category) |>
+  ggplot(aes(x = category, y = total)) +
+  geom_bar(stat="identity") +
+  labs(title = "Frequentation at the national level depending on types",
+       x = "Categories",
+       y = "Number of museums") +
+  coord_flip() +
+  scale_y_continuous(labels = comma)
+```
+
+```{r}
+freq_total <- data |> filter(!is.na(total)) |> summarize(freq_total = sum(total))
+
+perc2 <- data |>
+  filter(!is.na(total)) |>
+  filter(category == "History, Art") |>
+  summarize(total = sum(total)) |>
+  mutate(percentage = total/freq_total * 100) |>
+  mutate(total = scales::comma(total)) |>
+  mutate(percentage = round(percentage, 2))
+```
+
+Visitors is not an evenly distributed asset! One category of museum (History and Art) is significantly ahead of the others in terms of attendance records, with `r perc2$total` visitors in 2019 which represents `r perc2$percentage`% of the total frequentation. 
+
+```{r}
+perc3 <- data |>
+  filter(category == "History") |>
+  summarize(n = n())
+
+perc4 <- data |>
+  filter(!is.na(total)) |>
+  filter(category == "History") |>
+  summarize(total = sum(total)) |>
+  mutate(total = scales::comma(total))
+```
+
+Although this category is the most widespread in France, with `r perc1$n` museums classified as History and Art, this attendance record is particularly high, compared with those of other categories. The other most common categories do not achieve the same attendance figures. The category History shows a major difference between the number of museums and the frequentation track: `r perc3` museums are listed as being exclusively of the History type (representing the third most frequent museum type), but its frequentation record is in fourth place, with `r perc4` visitors in 2019. 
+
+```{r}
+freq_count <- data_expanded |>
+  filter(!is.na(total)) |>
+  group_by(category) |>
+  summarise(freq_category = sum(total))
+
+ggplot(freq_count, aes(x = category, y = freq_category)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Frequentation of museums (considering categories individually)",
+       x = "Categories",
+       y = "Total frequentation") +
+  scale_y_continuous(labels = comma)
+```
+
+```{r}
+freq_count <- freq_count |> 
+  mutate(perc = freq_category/65623724*100) |>
+  mutate(freq_category = scales::comma(freq_category)) |>
+  mutate(perc = scales::percent(perc, scale = 1))
+
+knitr::kable(freq_count, col.names = c("Category","Total frequentation","Proportion of frequentation for each category"))
+```
+
+Looking at the categories individually, we observe that Art museums leads the way in terms of attendance record, with `r freq_count[1,3]` of the visits in 2019 to museums featuring Art in their description. Although Art museums are not the most common type of museum in France (behind History museums), total attendance for this type exceeds that of History museums in 2019. Visitor numbers for History museums remain close, with `r freq_count[2,3]` of visits to museums classified as History.
+
+It should be noted that frequentation between these two categories is highly interrelated, as museums categorized as both History and Art being the most prominent in France, both in terms of numbers of museums and attendance. 
+
+We also notice a significant difference between the total attendance of Science museums and that of the other two categories, with only `r freq_count[3,3]` of visits concerning museums classified as Science. 
+
+We can therefore conclude that the most popular museum theme in France is Art, followed very closely by History, a result largely due to the high attendance rates of museums classified in both the History and Art categories.
 
