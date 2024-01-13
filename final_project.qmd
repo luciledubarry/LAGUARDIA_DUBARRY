@@ -64,22 +64,6 @@ infos <- rbind(info_museum,info_freq)
 knitr::kable(infos, format = "html",col.names = c("Data base", "Number of rows","Number of columns"))
 ```
 
-```{r}
-missing_values <- rowSums(is.na(data))
-museum_with_NA<- sum(missing_values > 0)
-```
-
-`r museum_with_NA` museums in the final data base has at least one missing value. However, most of these missing values do not concern the variables of interest on which our analysis is based. 
-
-```{r}
-NA_total <- freq |> filter(is.na(total)) |> nrow()
-NA_dompal <- museum |> filter(is.na(dompal)) |> nrow()
-```
-
-We indicate below the number of NA in the key variables of our analysis:
-- in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. 
-- in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes. 
-These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
 
 ## Variables
 
@@ -814,8 +798,28 @@ summary(eighth_regression)
 
 # Annex
 
+## Link to our GitHub
+
+We work on the Github project, available [here](https://github.com/luciledubarry/LAGUARDIA_DUBARRY.git).
+
 ## Link to sources
 
 The **"Musées de France: base Muséofile"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/musees-de-france-base-museofile/#/resources)
 
 The **"Fréquentations des musées de France"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/frequentation-des-musees-de-france-1/#/resources)
+
+## Details of our data cleaning and joining 
+
+The freq data set only includes Muséofile references starting from 2019. The years following 2019 are highly impacted by Covid crisis. We don't take into account these years in our study, as they are not representative of the museum's usual frequentation. We use the “filter” function and select only the year **2019** for the freq data base.
+
+First, we get rid of museums that don't have the frequentation data, represented by the variable NOTE (when either the museum is closed or the information is partially completed). So, we only select the museums whose NOTE variable is empty. 
+
+Then, we only keep the variables of interest, and drop the rest. The variables that we keep are:
+**1st data set Frequentation:**
+ID_MUSEOFILE; NOM_DU_MUSEE; REGIONS; VILLE; TOTAL; PAYANT; GRATUIT; NOMDEP
+**2nd data set Muséofile:**
+REF; DOMPAL; ARTISTE;PROT-ESP; PROT-BAT;LATITUDE;LONGITUDE
+
+We join the data bases with reference to the **Muséofile ID number**. On the Museofile database it is the variable named REF and on the Frequentation database it is the variable named ID_MUSEOFILE.
+We use the function "inner_join" as it allows us to keep only the museums for which we have all the information (the frequentation and the characteristics). 
+
