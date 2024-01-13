@@ -1,5 +1,5 @@
 ---
-title: "Data Management Project: Location's impact on museum attendance"
+title: "Data Management Project: Location and theme impact on museum attendance"
 author: Joséphine Laguardia and Lucile Dubarry
 format: 
   wordcount-html: default
@@ -199,7 +199,7 @@ knitr::kable(vitality2,
 
 This table shows us the cultural power of the "Île-de-France" region. With only `r vitality1[10,3]` % of total french museums, this region captures almost 60% of total visitors in France. The region completely crushes the others' percentages. Nevertheless, we find again the biggest regions : Auvergne-Rhones-Alpes (`r vitality2[1,3]` %), Provence-Alpes-Côte d'Azur (`r vitality2[17,3]` %), Grand Est (`r vitality2[6,3]` %), and Occitanie (`r vitality2[15,3]` %).
 
-In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side.
+In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side, where we can se that the comparison between share of museums and share of visitors is outstandingly noticeable for Île-de-France.
 
 ```{r}
 # we merge our two data frames
@@ -221,8 +221,6 @@ gg <- ggplot(vit_long, aes(x= regions, y= value, fill = Percentages)) +
 gg + coord_flip()
 ```
 
-\[description\]
-
 To go even further, we wanted to represent this cultural vitality on a map of France (because why not ?).
 
 ```{r}
@@ -233,7 +231,7 @@ library(tmap)
 library(rmapshaper)
 ```
 
-In order to do this, we had to introduce a new data base. This data base comes from the same source as our main bases, and includes French administrative boundaries at regional level (regional contours) from OpenStreetMap. The *Contours des régions françaises sur OpenStreetMap* dataset is available [here](https://www.data.gouv.fr/fr/datasets/contours-des-regions-francaises-sur-openstreetmap/#_)
+In order to do this, we had to introduce a new data base. This data base comes from the same source as our main bases, and includes French administrative boundaries at regional level (regional contours) from OpenStreetMap. The *Contours des régions françaises sur OpenStreetMap* dataset is available [here](https://www.data.gouv.fr/fr/datasets/contours-des-regions-francaises-sur-openstreetmap/#_).
 
 ```{r}
 # we introduce a new data base 
@@ -534,7 +532,7 @@ ggplot(region_count, aes(x = regions, y = total_museums, fill = category)) +
 
 All regions, with the exception of Île-de-France, have a similar distribution of museum themes (when considering categories individually): the most common type of museum is History, more or less followed by Art, and in third place Science museums. Île-de-France is the only region where the number of Art museums (mentioning Art among other categories) exceeds that of History museums.
 
-**Frequentation records depending on the museum type**
+**Attendance records depending on the museum type**
 
 We now focus on the attendance records depending on the type of museums, by representing the total frequentation for each categories.
 
@@ -658,16 +656,19 @@ Knowing what we now discovered, multiple questions can be asked. First, what is 
 
 ### The impact of being located in one of the 10 biggest cities on museums' attendance
 
-The relation that we are looking for is of this form:
+The relation that we are looking for between attendance and location is of this form:
 
 Attendance = b0 + b1\*City
+
+Since the variable *city* is a dummy variable, we interpret the coefficients b0 and b1 such as : b0 is the average number of visitors for a museum not located in one of the 10 biggest cities, and b1 is the number of visitors that are added to b0, corresponding to the average number of visitors in a museum located in a big city. 
+We find the following relationship:
 
 ```{r first regression}
 first_regression <- lm(total ~ city, data = data)
 summary(first_regression)
 ```
 
-From this regression, we can say that the average number of visitors per year for a museum not located in one of the 10 biggest cities is estimated to be 34856. For a museum located in one of those cities, on the other hand, it is estimated to be 34856 + 260451, which is equal to: `r 34856 + 260451` visitors.
+From this regression, we can say that the average number of visitors per year for a museum not located in one of the 10 biggest cities is estimated to be 34856. For a museum located in one of those cities, on the other hand, it is estimated to be 34856 + 260451, which is equal to: 295 307 visitors. This means that the sole fact of being located in a big city multiplies the number of visitors by more than 8. 
 
 ```{r}
 plot(data$city, data$total, main = "Link between being located in a big city and museums attendance", xlab = "Located in one of the 10 biggest cities", ylab = "Total visits in a year", xaxt = "n", ylim = c(0, 700000))
@@ -675,18 +676,23 @@ abline(first_regression, col = "red")
 axis(1, at = 0:1)
 ```
 
+In conclusion, the fact that a museum is located in a big city has a significant positive impact on its attendance. This can be explained by the fact that those cities are densely populated, meaning that more people from the city have the occasion to go to those museums. Furthermore, those cities attract tourists, which can enjoy the cultural aspect of the city they're visiting through going to the museum. 
+
 ### The impact of being located in Paris on museums' attendance
 
-The relation that we are looking for is of this form:
+Let's focus now on one city in particular: Paris.The relation that we are looking for is of this form:
 
 Attendance = b0 + b1\*Paris
+
+The variable *paris* being a dummy variable as well, we interpret the coefficients b0 and b1 just like before.
+We find the following relationship:
 
 ```{r second regression}
 second_regression <- lm(total ~ PARIS, data = data)
 summary(second_regression)
 ```
 
-From this regression, we can say that the average number of visitors per year for a museum not located in Paris is estimated to be 39521. For a museum located in Paris, on the other hand, it is estimated to be 39521 + 501212, which is equal to: `r 39521 + 501212` visitors.
+From this regression, we can say that the average number of visitors per year for a museum not located in Paris is estimated to be 39521. For a museum located in Paris, on the other hand, it is estimated to be 39521 + 501212, which is equal to: 540 733 visitors. This means that the only fact of being located in Paris multiplies the attendance numbers by more than 13 ! 
 
 ```{r}
 plot(data$city, data$total, main = "Link between being located in Paris and museums attendance", xlab = "Located in Paris", ylab = "Total visits", xaxt = "n",ylim = c(0, 700000))
@@ -694,7 +700,11 @@ abline(second_regression, col = "blue")
 axis(1, at = 0:1)
 ```
 
-### The impact of a museum's theme on attendance
+Therefore, the impact of being located in Paris is significantly beneficial for a museum, in terms of number of visitors. The positive effect is not surprising, with Paris being the most visited city in the world. But the intensity of it is impressive. 
+
+## Impact of a museum's theme on attendance
+
+Our second focus for this analysis is the museum's theme: Does its theme have an impact on its attendance ? Let's look into it.
 
 ```{r new variables }
 # creating a dummy variable for the category history
@@ -731,26 +741,32 @@ science <- function(category) {
 data$science <- sapply(data$category, science)
 ```
 
-**Art**
+### The impact of being an Art museum on its attendance
 
 ```{r third regression}
 third_regression <- lm(total ~ art, data = data)
 summary(third_regression)
 ```
 
-**History**
+This regression indicates us that a scrictly history or science museum (meaning that it is not categorized as Art in any way, even cumulated with History or Science) has an estimated average number of visitors equal to 34 930. A museum categorized as an Art museum has on average 47 830 more visitors, which means that the only fact of being an Art museum doubles the attendance. 
+
+### The impact of being a History museum on its attendance
 
 ```{r fourth regression}
 fourth_regression <- lm(total ~ history, data = data)
 summary(fourth_regression)
 ```
 
-**Science**
+The same way, a History museum has, on average, 6 481 more visitors than the other kinds of museums. This corresponds to an increase of 10%. 
+
+### The impact of being a Science museum on its attendance
 
 ```{r fifth regression}
 fifth_regression <- lm(total ~ science, data = data)
 summary(fifth_regression)
 ```
+
+For science museums, the effect is opposite: the only fact of being a Science museum decreases their attendance by 35%.
 
 ```{r plots 1}
 par(mfrow = c(1,3))
@@ -768,25 +784,27 @@ abline(fifth_regression, col = "orange")
 axis(1, at = 0:1)
 ```
 
-### Adding control variables
+In conclusion, being an art museum has a strong positive impact on attendance, while being a science museum has a strong negative impact. The theme being history has a weak positive impact on attendance. 
+
+## Adding control variables
 
 Another question that could be asked is the impact of the museum's theme on the pre-existing relation between location and attendance. Is the impact of being located in Paris stronger if the museum is an Art museum ? Let's look into it.
 
-**Link between being located in a big city and attendance, art theme**
+### Link between being located in a big city and attendance, art theme
 
 ```{r sixth regression}
 sixth_regression <- lm(total ~ city + art, data = data)
 summary(sixth_regression)
 ```
 
-**Link between being located in a big city and attendance, history theme**
+### Link between being located in a big city and attendance, history theme
 
 ```{r seventh regression}
 seventh_regression <- lm(total ~ city + history, data = data)
 summary(seventh_regression)
 ```
 
-**Link between being located in a big city and attendance, science theme**
+### Link between being located in a big city and attendance, science theme
 
 ```{r eighth regression}
 eighth_regression <- lm(total ~ city + science, data = data)
