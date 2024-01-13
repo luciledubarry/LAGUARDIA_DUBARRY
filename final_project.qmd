@@ -830,14 +830,17 @@ Finally, from this last regression, we learn that the average estimated number o
 
 In conclusion, the theme of the museum has in fact an impact on the pre-existing relationship between location and attendance. More precisely, history and art increases the attendance in a big city while science decreases it slightly. 
 
+Our results from our causal analysis indicates a link between attendance and museums' characteristics such as location and theme. We recall that being located in a big city multiplies the attendance by 8, while being located in Paris multiplies it by more than 13. The location has thus a critical impact on museums' number of visitors. With respect to the theme of the museums, Art and History have a positive effect on attendance, while science has a significant negative impact.
+
 # Conclusion
 
-[little sum up of the descriptive statistics]
+What is the impact of location on museums' attendance ? Our observations in the first section and the calculations we have carried out point in the same direction for understanding the relationship. More than any other characteristic we studied, we can conclude that the most critical impact on museum attendance is unquestionably its location.
 
-Our results from our causal analysis indicates a link between attendance and museums' characteristics such as location and theme. 
-We recall that being located in a big city multiplies the attendance by 8, while being located in Paris multiplies it by more than 13. The location has thus a critical impact on museums' number of visitors.
-With respect to the theme of the museums, Art and History have a positive effect on attendance, while science has a significant negative impact.
-[finir lol]
+The results of our regression when we consider being in one of France's 10 largest cities show a significant positive impact on museum attendance. And the difference in attendance is even more marked when the museum is located in Paris. The positive effect is not surprising considering the capital's power of cultural attraction, both nationally and internationally, but its intensity is striking. Clearly, the game is not the same for museums located in the largest French cities as it is for all the others (and even more so for those located in Paris). The mere fact of being located in Paris multiplies attendance figures by more than 13! 
+
+What about the link between attendance and museum category? Based on our regression describing the impact of being an art museum on its attendance, art is the theme to choose to attract visitors. The only fact of being an art museum doubles the attendance. The category history have weak positive impact on frequentation. These results are consistent with our findings on the cultural diversity of museum themes, since we found that museums classified as history and art are the most influential, both in terms of number of museums and attendance. It should be noted that the numbers in these two categories are strongly correlated, since museums combining in history and art themes are the most common and the most visited ones. 
+
+Science museums, on the other hand, don't seem to be on a roll in terms of the current museum landscape in France (much to our disappointment). As regards the number of museums, they rank third ( this is true for all regions). In terms of attendance, there is a significant difference with the other two categories, with only `r freq_count[3,3]`% of visits to museums categorized in Science. The regression we made corresponds to this finding, since this theme is the only one to have a negative effect on the attendance rate. 
 
 # Annex
 
