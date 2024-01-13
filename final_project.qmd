@@ -29,7 +29,9 @@ freq <- vroom(here("frequentation-des-musees-de-france.csv"))
 
 The selection of the research topic on museum attendance in France stems from an interest in understanding the current landscape of museums in the country. Exploring the dynamics of museum attendance is crucial for gaining insights into the factors influencing visitor numbers. The central question revolves around the present state of museums in France and the key characteristics that impact their attendance.
 
-We want to put into perspective the link between museums' attendance and museums' characteristics, whether it be their location or their category (history, art, etc...). The main question that we ask ourselves is : What is the impact of location on museums' attendance ? More precisely, how much being located in a big city affects attendance numbers ? And to add to it, does a link exist between attendance numbers and the category of the museum ? We'll try to answer these questions in this project.
+We want to put into perspective the link between museums' attendance and museums' characteristics, whether it be their location or their category (history, art, etc...). The main question that we ask ourselves is : What is the impact of location on museums' attendance ? More precisely, how much being located in a big city affects attendance numbers ? And to add to it, does a link exist between attendance numbers and the category of the museum ?
+
+We will try to answer these questions in this project, by first portraying the main characteristics of museums: their geographical distribution, their themes and their state of historical preservation. We'll show how museums are spread across the regions in France, and whether or not they're located in a major city, and in Paris or not. We will relate these characteristics to museum attendance figures for 2019. Finally, based on our findings, we will apply linear regression to study the impact of museum location and theme on attendance records. 
 
 # Data sets description
 
@@ -61,12 +63,24 @@ info_freq <- freq |>
 infos <- rbind(info_museum,info_freq)
 
 knitr::kable(infos, format = "html",col.names = c("Data base", "Number of rows","Number of columns"))
-
-NA_total <- freq |> filter(is.na(total))
-NA_dompal <- museum |> filter(is.na(dompal))
 ```
 
-We indicate below the number of NA in the key variables of our analysis: - in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. - in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums into account when studying the museum themes. These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
+```{r}
+missing_values <- rowSums(is.na(data))
+museum_with_NA<- sum(missing_values > 0)
+```
+
+`r museum_with_NA` museums in the final data base has at least one missing value. However, most of these missing values do not concern the variables of interest on which our analysis is based. 
+
+```{r}
+NA_total <- freq |> filter(is.na(total)) |> nrow()
+NA_dompal <- museum |> filter(is.na(dompal)) |> nrow()
+```
+
+We indicate below the number of NA in the key variables of our analysis:
+- in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. 
+- in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes. 
+These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
 
 ## Variables
 
@@ -217,7 +231,7 @@ gg <- ggplot(vit_long, aes(x= regions, y= value, fill = Percentages)) +
   geom_col(position = "dodge") +
   xlab("Regions") +
   ylab("Cultural vitality") +
-  theme(axis.title = element_text(size = 15,
+  theme(axis.title = element_text(size = 13,
                                   color = "purple",
                                   face = "bold")) +
   scale_fill_hue(h = c(180, 270))
@@ -302,7 +316,7 @@ data |>
   group_by(city) |>
   summarise(total_museum = n()) |>
   ggplot(aes(x = city, y = total_museum)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = "purple") +
   labs(title = "Number of museums by city location",
        x = "Location of the museum",
        y = "Number of museums") +
@@ -330,7 +344,7 @@ data |> filter(!is.na(total)) |>
   group_by(city) |>
   summarise(total_freq = sum(total)) |>
   ggplot(aes(x = city, y = total_freq)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = "purple") +
   labs(title = "Frequentation of museums by city location",
        x = "Location of the museum",
        y = "Cumulative frequentation") +
@@ -374,7 +388,7 @@ data |>
   group_by(PARIS) |>
   summarise(total_museum = n()) |>
   ggplot(aes(x = PARIS, y = total_museum)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = "darkgreen") +
   labs(title = "Comparison of the number of museums in Paris and other location ",
        x = "Location of the museum",
        y = "Number of museums") +
@@ -396,7 +410,7 @@ data |> filter(!is.na(total)) |>
   group_by(PARIS) |>
   summarise(total_freq = sum(total)) |>
   ggplot(aes(x = PARIS, y = total_freq)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = "darkgreen") +
   labs(title = "Frequentation of museums located in Paris and other location",
        x = "Location of the museum",
        y = "Cumulative frequentation") +
@@ -492,11 +506,12 @@ category_count <- data_expanded |>
   group_by(category) |>
   summarise(total_museums = n())
 
-ggplot(category_count, aes(x = category, y = total_museums)) +
-  geom_bar(stat = "identity", fill = "purple") +
+ggplot(category_count, aes(x = category, y = total_museums, fill = category)) +
+  geom_bar(stat = "identity") +
   labs(title = "Distribution of museum theme (considering categories individually)",
        x = "Categories",
-       y = "Number of museums")
+       y = "Number of museums") +
+  scale_fill_brewer(palette="Greens")
 ```
 
 The following table shows the percentage of museums that include the category in their description, relative to the total number of museums in France.
@@ -546,7 +561,7 @@ In the same way as in the previous section, we separate our analysis by studying
 data |> filter(!is.na(total)) |> filter(!is.na(category)) |>
   group_by(category) |>
   ggplot(aes(x = category, y = total)) +
-  geom_bar(stat="identity") +
+  geom_bar(stat="identity", fill = "darkgreen") +
   labs(title = "Frequentation at the national level depending on types",
        x = "Categories",
        y = "Number of museums") +
@@ -586,12 +601,13 @@ freq_count <- data_expanded |>
   group_by(category) |>
   summarise(freq_category = sum(total))
 
-ggplot(freq_count, aes(x = category, y = freq_category)) +
+ggplot(freq_count, aes(x = category, y = freq_category, fill = category)) +
   geom_bar(stat = "identity") +
   labs(title = "Frequentation of museums (considering categories individually)",
        x = "Categories",
        y = "Total frequentation") +
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_brewer(palette="Greens")
 ```
 
 ```{r}
@@ -620,7 +636,7 @@ data <- data |>
   mutate(building_preservation = ifelse(!is.na(prot_bat) & startsWith(prot_bat, "Protégé"), "Protected", "Not Protected"))
 
 ggplot(data, aes(x = building_preservation)) +
-  geom_bar() +
+  geom_bar(fill = "blue") +
   labs(title = "Number of museums under building preservation",
        x = "Building preservation status",
        y = "Number of museums")
@@ -631,7 +647,7 @@ data <- data |>
   mutate(space_preservation = ifelse(!is.na(prot_esp), "Protected", "Not Protected"))
 
 ggplot(data, aes(x = space_preservation)) +
-  geom_bar() +
+  geom_bar(fill = "blue") +
   labs(title = "Number of museums under space preservation",
        x = "Space preservation status",
        y = "Number of museums")
