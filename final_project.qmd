@@ -625,4 +625,3 @@ plot(data_expanded$city, data_expanded$total, main = "Link between being located
 abline(second_regression, col = "blue")
 axis(1, at = 0:1)
 ```
-
