@@ -64,6 +64,15 @@ infos <- rbind(info_museum,info_freq)
 knitr::kable(infos, format = "html",col.names = c("Data base", "Number of rows","Number of columns"))
 ```
 
+```{r}
+NA_total <- freq |> filter(is.na(total)) |> nrow()
+NA_dompal <- museum |> filter(is.na(dompal)) |> nrow()
+```
+
+We indicate below the number of NA in the key variables of our analysis:
+- in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. 
+- in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes. 
+These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
 
 ## Variables
 
@@ -297,7 +306,7 @@ data |>
   group_by(city) |>
   summarise(total_museum = n()) |>
   ggplot(aes(x = city, y = total_museum)) +
-  geom_bar(stat = "identity", fill = "purple") +
+  geom_bar(stat = "identity", fill = "darkorchid3") +
   labs(title = "Number of museums by city location",
        x = "Location of the museum",
        y = "Number of museums") +
@@ -325,7 +334,7 @@ data |> filter(!is.na(total)) |>
   group_by(city) |>
   summarise(total_freq = sum(total)) |>
   ggplot(aes(x = city, y = total_freq)) +
-  geom_bar(stat = "identity", fill = "purple") +
+  geom_bar(stat = "identity", fill = "darkorchid3") +
   labs(title = "Frequentation of museums by city location",
        x = "Location of the museum",
        y = "Cumulative frequentation") +
@@ -617,7 +626,7 @@ data <- data |>
   mutate(building_preservation = ifelse(!is.na(prot_bat) & startsWith(prot_bat, "Protégé"), "Protected", "Not Protected"))
 
 ggplot(data, aes(x = building_preservation)) +
-  geom_bar(fill = "blue") +
+  geom_bar(fill = "cornflowerblue") +
   labs(title = "Number of museums under building preservation",
        x = "Building preservation status",
        y = "Number of museums")
@@ -628,7 +637,7 @@ data <- data |>
   mutate(space_preservation = ifelse(!is.na(prot_esp), "Protected", "Not Protected"))
 
 ggplot(data, aes(x = space_preservation)) +
-  geom_bar(fill = "blue") +
+  geom_bar(fill = "cornflowerblue") +
   labs(title = "Number of museums under space preservation",
        x = "Space preservation status",
        y = "Number of museums")
@@ -649,6 +658,8 @@ perc11 <- data |>
 ```
 
 Historical preservation status, both of the building and the space around the museum, concerns a large proportion of French museums. `r perc10$n` museums are listed as a historical monument, which represents `r perc10$percentage`% of all museums. The number is even greater when it comes to space preservation, since `r perc10$percentage`% of the museums are classified as a preserved space (or located near a protected monument).
+
+Our findings on the geographical distribution of museums in France highlight the crucial impact of location on museum attendance. More than any other characteristic we studied, location seems to be the key to high frequentation rates. Although a minority of museums are located in France's 10 largest cities, these museums attracted over 50% of total visitors in 2019. The results are even more striking if we compare museums located in Paris with all other museums in France, with `r perc9$pourcentage`% of this year's total attendance in Parisian museums.
 
 ## Impact of location on attendance
 
