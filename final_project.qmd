@@ -799,7 +799,7 @@ In conclusion, being an art museum has a strong positive impact on attendance, w
 
 ## Adding control variables
 
-Another question that could be asked is the impact of the museum's theme on the pre-existing relation between location and attendance. Is the impact of being located in Paris stronger if the museum is an Art museum ? Let's look into it.
+Another question that could be asked is the impact of the museum's theme on the pre-existing relation between location and attendance. Is the impact of being located in a big city stronger if the museum is an Art museum ? Let's look into it.
 
 ### Link between being located in a big city and attendance, art theme
 
@@ -808,12 +808,16 @@ sixth_regression <- lm(total ~ city + art, data = data)
 summary(sixth_regression)
 ```
 
+This regression indicates that a museum not located in a big city and not categorized as an Art museum has an estimated average number of visitors equal to 10 626. If a museum is located in a big city but still is not categorized as Art museum, its number of visitor is multiplied by 25 (from 10 626 visitors to 267 964 visitors). Lastly, if the museum is located in a big city and is an Art museum, then its number of visitors increases by 15% compared to a non-art museum in a big city. 
+
 ### Link between being located in a big city and attendance, history theme
 
 ```{r seventh regression}
 seventh_regression <- lm(total ~ city + history, data = data)
 summary(seventh_regression)
 ```
+
+This regression tells us that a non-history museum located in a small city has an estimated average number of visitors equal to 509 (which seems very little, but we have to keep in mind that History is the most present category). If a museum is located in a big city but is not a History museum, then its attendance is multiplied by more than 530 (from 509 visitors to 270 621) ! Furthermore, if it is a history museum, its attendance increases by 15%.
 
 ### Link between being located in a big city and attendance, science theme
 
@@ -822,8 +826,18 @@ eighth_regression <- lm(total ~ city + science, data = data)
 summary(eighth_regression)
 ```
 
+Finally, from this last regression, we learn that the average estimated number of visitors in a non-science museum located in a small city is equal to 39 630. If the museum is located in a big city, but is still not a science museum, then its attendance is multiplied by 7 (from 39 630 to 298 653). Lastly, if it is a science museum, then its attendance decreases, even if it is located in a big city, by 5%. 
+
+In conclusion, the theme of the museum has in fact an impact on the pre-existing relationship between location and attendance. More precisely, history and art increases the attendance in a big city while science decreases it slightly. 
 
 # Conclusion
+
+[little sum up of the descriptive statistics]
+
+Our results from our causal analysis indicates a link between attendance and museums' characteristics such as location and theme. 
+We recall that being located in a big city multiplies the attendance by 8, while being located in Paris multiplies it by more than 13. The location has thus a critical impact on museums' number of visitors.
+With respect to the theme of the museums, Art and History have a positive effect on attendance, while science has a significant negative impact.
+[finir lol]
 
 # Annex
 
