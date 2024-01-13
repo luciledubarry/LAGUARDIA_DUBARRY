@@ -1,7 +1,8 @@
 ---
 title: "Data Management Project: Location's impact on museum attendance"
 author: Joséphine Laguardia and Lucile Dubarry
-format: html
+format: 
+  wordcount-html: default
 code-fold: true
 echo: false
 ---
@@ -26,13 +27,12 @@ freq <- vroom(here("frequentation-des-musees-de-france.csv"))
 
 # Research question
 
-The selection of the research topic on museum attendance in France stems from an interest in understanding the current landscape of museums in the country. Exploring the dynamics of museum attendance is crucial for gaining insights into the factors influencing visitor numbers. The central question revolves around the present state of museums in France and the key characteristics that impact their attendance. 
+The selection of the research topic on museum attendance in France stems from an interest in understanding the current landscape of museums in the country. Exploring the dynamics of museum attendance is crucial for gaining insights into the factors influencing visitor numbers. The central question revolves around the present state of museums in France and the key characteristics that impact their attendance.
 
-We want to put into perspective the link between museums’ attendance and museums’ characteristics, whether it be their location or their category (history, art, etc…). The main question that we ask ourselves is : What is the impact of location on museums’ attendance ? More precisely, how much being located in a big city affects attendance numbers ?  And to add to it, does a link exist between attendance numbers and the category of the museum ?
-We’ll try to answer these questions in this project.
-
+We want to put into perspective the link between museums' attendance and museums' characteristics, whether it be their location or their category (history, art, etc...). The main question that we ask ourselves is : What is the impact of location on museums' attendance ? More precisely, how much being located in a big city affects attendance numbers ? And to add to it, does a link exist between attendance numbers and the category of the museum ? We'll try to answer these questions in this project.
 
 # Data sets description
+
 ## Sources
 
 Both our data sets come from the **French Ministry of culture**. Since 2011, the Ministry of culture has set up both a public data census service and a data sharing service, open to all citizens, researchers, students, journalists, and companies. Its aim is to improve the exposure of cultural works and French cultural institutions. Even though it is a legal obligation since 2018 for administrations to open up their data, there are a lot of benefits from sharing these data: full transparency with the citizens, support for social innovations, boosting the local economy through discovering local cultural institutions, boosting France international influence etc.
@@ -43,11 +43,7 @@ Our second data set, **"Fréquentation des musées de France"**, contains the nu
 
 The advantage of gathering databases from the same website and the same institution of origin is that the merging will be a lot easier, due to the fact that they have variables in common. What's more, the source being the Ministry of culture gives us the assurance that the data has been collected correctly.
 
-The **"Musées de France: base Muséofile"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/musees-de-france-base-museofile/#/resources)
-
-The **"Fréquentations des musées de France"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/frequentation-des-musees-de-france-1/#/resources)
-
-## Size 
+## Size
 
 ```{r}
 #| message : false 
@@ -69,22 +65,22 @@ knitr::kable(infos, format = "html",col.names = c("Data base", "Number of rows",
 NA_total <- freq |> filter(is.na(total))
 NA_dompal <- museum |> filter(is.na(dompal))
 ```
-We indicate below the number of NA in the key variables of our analysis:
-- in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. 
-- in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes. 
-These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis. 
+
+We indicate below the number of NA in the key variables of our analysis: - in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. - in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums into account when studying the museum themes. These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
 
 ## Variables
-### 1st data set - Musée de France: base Muséofile:
-REF : Muséofile reference code; 
 
-NOMOFF : Official name of the museum; 
+### 1st data set - Musée de France: base Muséofile:
+
+REF : Muséofile reference code;
+
+NOMOFF : Official name of the museum;
 
 AUTNOM : Customary name of the museum;
 
-ADRL1_M : Address; 
+ADRL1_M : Address;
 
-LIEU_M : Specifications of the address; 
+LIEU_M : Specifications of the address;
 
 CP_M : Postal code;
 
@@ -100,15 +96,15 @@ TEL_M : Phone number of the museum;
 
 CATEG: Specific museum category;
 
-DOMPAL: Main themes of the collections; 
+DOMPAL: Main themes of the collections;
 
-HIST: History of the collection; 
+HIST: History of the collection;
 
-ATOUT: Assets of the collection; 
+ATOUT: Assets of the collection;
 
-THEMES: Details of the themes  of the collections; 
+THEMES: Details of the themes of the collections;
 
-ARTIST: Leading artists of the collection; 
+ARTIST: Leading artists of the collection;
 
 PHARE: Leading personalities of the collection;
 
@@ -125,17 +121,18 @@ AN-CREAT: Year of creation;
 DMAJ: Date of the last information update; Latitude; Longitude.
 
 ### 2nd data set - Fréquentation des musées de France:
-REF_MUSEE: Museum reference code; 
 
-NOM_DU_MUSEE: Museum official name; 
+REF_MUSEE: Museum reference code;
 
-ANNEE: Year of update; 
+NOM_DU_MUSEE: Museum official name;
+
+ANNEE: Year of update;
 
 REGIONS: Region;
 
 VILLE: City;
 
-DATE_APPELLATION: Date on which controlled museums receive the designation “Musées de France”, since February 2003
+DATE_APPELLATION: Date on which controlled museums receive the designation "Musées de France", since February 2003
 
 PAYANT: Number of visits with paid entrance ticket;
 
@@ -143,20 +140,19 @@ GRATUIT: Number of visits with free entrance ticket;
 
 TOTAL: Total of number of visits (PAYANT + GRATUIT);
 
-NOTE: indicates: 
+NOTE: indicates:
 
-- "F": the museum is closed; 
+-   "F": the museum is closed;
 
-- "NC": no frequentation data have been provided; 
+-   "NC": no frequentation data have been provided;
 
-- "R": withdrawal of the "Musées de France" designation.
+-   "R": withdrawal of the "Musées de France" designation.
 
-ID_MUSEOFILE: Muséofile reference code ; 
+ID_MUSEOFILE: Muséofile reference code ;
 
 NOMDEP: Department;
 
 OBSERVATIONS: The "OBSERVATIONS" column contains the references of the museums whose frequentation is aggregated.
-
 
 # Data analysis
 
@@ -281,13 +277,13 @@ plot <- ggplot(regions1)+
 plot + labs(title = "Cultural vitality in France", subtitle = "Number of museums in each french region")
 ```
 
-Unfortunately, we were unable to represent the French overseas regions on this map. 
+Unfortunately, we were unable to represent the French overseas regions on this map.
 
 ### City or not: Number of museums and frequentation records by city location
 
 We now aim to assess how the distribution of museums, both in terms of number of museums and attendance, varies when they are located in densely populated cities. Does being located in large cities have a strong impact on museum attendance?
 
-To find out, we separate museums into two categories, selecting the 10 largest cities in France: Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier, Strasbourg, Bordeaux and Lille. We create the variable "city", worth 1 if the museum is located in 1 of these cities, 0 otherwise. 
+To find out, we separate museums into two categories, selecting the 10 largest cities in France: Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier, Strasbourg, Bordeaux and Lille. We create the variable "city", worth 1 if the museum is located in 1 of these cities, 0 otherwise.
 
 ```{r}
 city <- function(ville) {
@@ -327,7 +323,7 @@ perc6 <- data |>
   mutate(percentage = round(percentage, 2))
 ```
 
-In terms of the number of museums, the most populated cities do not account for a disproportionate number of museums in France, and `r perc5$percentage`% of museums are located outside major cities. 
+In terms of the number of museums, the most populated cities do not account for a disproportionate number of museums in France, and `r perc5$percentage`% of museums are located outside major cities.
 
 ```{r}
 data |> filter(!is.na(total)) |>
@@ -342,7 +338,7 @@ data |> filter(!is.na(total)) |>
   scale_x_discrete(labels = c("other location", "city location"))
 ```
 
-```{r} 
+```{r}
 freq_total <- data |> filter(!is.na(total)) |> summarize(freq_total = sum(total))
 
 perc7 <- data |>
@@ -357,9 +353,9 @@ Although only `r perc6$percentage`% of museums are located in France's largest c
 
 ### Capital or not: Number of museums and frequentation records in Paris
 
-We can narrow our focus and observe whether being located in Paris has a significant impact on the number of museums and their attendance figures. 
+We can narrow our focus and observe whether being located in Paris has a significant impact on the number of museums and their attendance figures.
 
-We repeat the same operation than in the previous section for the capital. We create the variable "PARIS" such that it is equals to 1 is the museum is located in the capital, 0 otherwise. 
+We repeat the same operation than in the previous section for the capital. We create the variable "PARIS" such that it is equals to 1 is the museum is located in the capital, 0 otherwise.
 
 ```{r}
 PARIS <- function(ville) {
@@ -383,7 +379,8 @@ data |>
        x = "Location of the museum",
        y = "Number of museums") +
   scale_x_discrete(labels = c("other location", "located in Paris"))
-``` 
+```
+
 ```{r}
 perc8 <- data |>
   filter(PARIS == "1") |>
@@ -392,7 +389,7 @@ perc8 <- data |>
   mutate(percentage = round(percentage, 2))
 ```
 
-In terms of the number of museums, the capital does not seem to have a major impact on museum location. With only `r perc8$n` museums located in Paris, it represents `r perc8$percentage`% of the total French museums. 
+In terms of the number of museums, the capital does not seem to have a major impact on museum location. With only `r perc8$n` museums located in Paris, it represents `r perc8$percentage`% of the total French museums.
 
 ```{r}
 data |> filter(!is.na(total)) |>
@@ -406,6 +403,7 @@ data |> filter(!is.na(total)) |>
   scale_y_continuous(labels = scales::comma) +
   scale_x_discrete(labels = c("other location", "located in Paris"))
 ```
+
 ```{r}
 perc9 <- data |>
   filter(!is.na(total)) |>
@@ -536,7 +534,7 @@ ggplot(region_count, aes(x = regions, y = total_museums, fill = category)) +
   coord_flip()
 ```
 
-All regions, with the exception of Île-de-France, have a similar distribution of museum themes (when considering categories individually): the most common type of museum is History, more or less followed by Art, and in third place Science museums. Île-de-France is the only region where the number of Art museums (mentioning Art among other categories) exceeds that of History museums. 
+All regions, with the exception of Île-de-France, have a similar distribution of museum themes (when considering categories individually): the most common type of museum is History, more or less followed by Art, and in third place Science museums. Île-de-France is the only region where the number of Art museums (mentioning Art among other categories) exceeds that of History museums.
 
 **Frequentation records depending on the museum type**
 
@@ -613,9 +611,9 @@ We also notice a significant difference between the total attendance of Science 
 
 We can therefore conclude that the most popular museum theme in France is Art, followed very closely by History, a result largely due to the high attendance rates of museums classified in both the History and Art categories.
 
-## Third charasteristic: Building and Space preservation
+### Third charasteristic: Building and Space preservation
 
-In this section, we will comment on the number of museums that are concerned by building preservation and space preservation. The variables "prot_bat" and "prot_esp" respectively indicates if the museum is listed as a protected historical monument and as a remarkable cultural site (or located close to a protected historical monument). 
+In this section, we will comment on the number of museums that are concerned by building preservation and space preservation. The variables "prot_bat" and "prot_esp" respectively indicates if the museum is listed as a protected historical monument and as a remarkable cultural site (or located close to a protected historical monument).
 
 ```{r}
 data <- data |>
@@ -655,45 +653,154 @@ perc11 <- data |>
 
 Historical preservation status, both of the building and the space around the museum, concerns a large proportion of French museums. `r perc10$n` museums are listed as a historical monument, which represents `r perc10$percentage`% of all museums. The number is even greater when it comes to space preservation, since `r perc10$percentage`% of the museums are classified as a preserved space (or located near a protected monument).
 
-
-### Impact of location on attendance
+## Impact of location on attendance
 
 Knowing what we now discovered, multiple questions can be asked. First, what is the impact of location on museums' attendance ? What we mean by location is two possible variables : the museum being located in one of the 10 biggest cities (or not) and the museum being located in Paris (or not). Let's study the first case.
 
-** The impact of being located in one of the 10 biggest cities on museums' attendance**
+### The impact of being located in one of the 10 biggest cities on museums' attendance
 
 The relation that we are looking for is of this form:
 
-Attendance = b0 + b1*City
+Attendance = b0 + b1\*City
 
 ```{r first regression}
-first_regression <- lm(total ~ city, data = data_expanded)
+first_regression <- lm(total ~ city, data = data)
 summary(first_regression)
 ```
 
-From this regression, we can say that the average number of visitors per year for a museum not located in one of the 10 biggest cities is estimated to be 36495. For a museum located in one of those cities, on the other hand, it is estimated to be 36495 + 316357, which is equal to: `r 36495 + 316357` visitors. 
+From this regression, we can say that the average number of visitors per year for a museum not located in one of the 10 biggest cities is estimated to be 34856. For a museum located in one of those cities, on the other hand, it is estimated to be 34856 + 260451, which is equal to: `r 34856 + 260451` visitors.
 
 ```{r}
-plot(data_expanded$city, data_expanded$total, main = "Link between being located in a big city and museums attendance", xlab = "Located in one of the 10 biggest cities", ylab = "Total visits in a year", xaxt = "n")
+plot(data$city, data$total, main = "Link between being located in a big city and museums attendance", xlab = "Located in one of the 10 biggest cities", ylab = "Total visits in a year", xaxt = "n", ylim = c(0, 700000))
 abline(first_regression, col = "red")
 axis(1, at = 0:1)
 ```
 
-** The impact of being located in Paris on museums' attendance**
+### The impact of being located in Paris on museums' attendance
 
 The relation that we are looking for is of this form:
 
-Attendance = b0 + b1*Paris
+Attendance = b0 + b1\*Paris
 
 ```{r second regression}
-second_regression <- lm(total ~ PARIS, data = data_expanded)
+second_regression <- lm(total ~ PARIS, data = data)
 summary(second_regression)
 ```
 
-From this regression, we can say that the average number of visitors per year for a museum not located in Paris is estimated to be 41174. For a museum located in Paris, on the other hand, it is estimated to be 41174 + 604 5000, which is equal to: `r 41174 + 6045000` visitors. 
+From this regression, we can say that the average number of visitors per year for a museum not located in Paris is estimated to be 39521. For a museum located in Paris, on the other hand, it is estimated to be 39521 + 501212, which is equal to: `r 39521 + 501212` visitors.
 
 ```{r}
-plot(data_expanded$city, data_expanded$total, main = "Link between being located in Paris and museums attendance", xlab = "Located in Paris", ylab = "Total visits", xaxt = "n")
+plot(data$city, data$total, main = "Link between being located in Paris and museums attendance", xlab = "Located in Paris", ylab = "Total visits", xaxt = "n",ylim = c(0, 700000))
 abline(second_regression, col = "blue")
 axis(1, at = 0:1)
 ```
+
+### The impact of a museum's theme on attendance
+
+```{r new variables }
+# creating a dummy variable for the category history
+art <- function(category) {
+    if (grepl("Art", category, ignore.case = TRUE)) {
+    return("1")
+  } else {
+    return("0")
+  }
+}
+
+data$art <- sapply(data$category, art)
+
+# creating a dummy variable for the category history
+history <- function(category) {
+    if (grepl("History", category, ignore.case = TRUE)) {
+    return("1")
+  } else {
+    return("0")
+  }
+}
+
+data$history <- sapply(data$category, history)
+
+# creating a dummy variable for the category science
+science <- function(category) {
+    if (grepl("Science", category, ignore.case = TRUE)) {
+    return("1")
+  } else {
+    return("0")
+  }
+}
+
+data$science <- sapply(data$category, science)
+```
+
+\*\* Art \*\*
+
+```{r third regression}
+third_regression <- lm(total ~ art, data = data)
+summary(third_regression)
+```
+
+\*\* History \*\*
+
+```{r fourth regression}
+fourth_regression <- lm(total ~ history, data = data)
+summary(fourth_regression)
+```
+
+\*\* Science \*\*
+
+```{r fifth regression}
+fifth_regression <- lm(total ~ science, data = data)
+summary(fifth_regression)
+```
+
+```{r plots 1}
+par(mfrow = c(1,3))
+# plot 1
+plot(data$art, data$total, main = "Link between being an art museum and its attendance", xlab = "Being an art museum", ylab = "Total visits", xaxt = "n", ylim = c(0, 500000))
+abline(third_regression, col = "darkgreen")
+axis(1, at = 0:1)
+# plot 2
+plot(data$history, data$total, main = "Link between being a history museum and its attendance", xlab = "Being a history museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
+abline(fourth_regression, col = "pink")
+axis(1, at = 0:1)
+# plot 3
+plot(data$science, data$total, main = "Link between being a science museum and its attendance", xlab = "Being a science museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
+abline(fifth_regression, col = "orange")
+axis(1, at = 0:1)
+```
+
+### Adding control variables
+
+Another question that could be asked is the impact of the museum's theme on the pre-existing relation between location and attendance. Is the impact of being located in Paris stronger if the museum is an Art museum ? Let's look into it.
+
+\*\* Link between being located in a big city and attendance, art theme\*\*
+
+```{r sixth regression}
+sixth_regression <- lm(total ~ city + art, data = data)
+summary(sixth_regression)
+```
+
+\*\* Link between being located in a big city and attendance, history theme\*\*
+
+```{r seventh regression}
+seventh_regression <- lm(total ~ city + history, data = data)
+summary(seventh_regression)
+```
+
+\*\* Link between being located in a big city and attendance, science theme\*\*
+
+```{r eighth regression}
+eighth_regression <- lm(total ~ city + science, data = data)
+summary(eighth_regression)
+```
+
+
+# Conclusion
+
+# Annex
+
+## Link to sources
+
+The **"Musées de France: base Muséofile"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/musees-de-france-base-museofile/#/resources)
+
+The **"Fréquentations des musées de France"** dataset is available [here](https://www.data.gouv.fr/fr/datasets/frequentation-des-musees-de-france-1/#/resources)
