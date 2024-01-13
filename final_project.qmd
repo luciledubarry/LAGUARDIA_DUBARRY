@@ -46,7 +46,6 @@ The advantage of gathering databases from the same website and the same institut
 ## Size
 
 ```{r}
-#| message : false 
 info_museum <- museum |>
   summarise(
     data_base = "Museum data base",
@@ -61,12 +60,8 @@ info_freq <- freq |>
 infos <- rbind(info_museum,info_freq)
 
 knitr::kable(infos, format = "html",col.names = c("Data base", "Number of rows","Number of columns"))
-
-NA_total <- freq |> filter(is.na(total))
-NA_dompal <- museum |> filter(is.na(dompal))
 ```
 
-We indicate below the number of NA in the key variables of our analysis: - in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. - in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums into account when studying the museum themes. These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
 
 ## Variables
 
@@ -732,21 +727,21 @@ science <- function(category) {
 data$science <- sapply(data$category, science)
 ```
 
-\*\* Art \*\*
+**Art**
 
 ```{r third regression}
 third_regression <- lm(total ~ art, data = data)
 summary(third_regression)
 ```
 
-\*\* History \*\*
+**History**
 
 ```{r fourth regression}
 fourth_regression <- lm(total ~ history, data = data)
 summary(fourth_regression)
 ```
 
-\*\* Science \*\*
+**Science**
 
 ```{r fifth regression}
 fifth_regression <- lm(total ~ science, data = data)
@@ -756,15 +751,15 @@ summary(fifth_regression)
 ```{r plots 1}
 par(mfrow = c(1,3))
 # plot 1
-plot(data$art, data$total, main = "Link between being an art museum and its attendance", xlab = "Being an art museum", ylab = "Total visits", xaxt = "n", ylim = c(0, 500000))
+plot(data$art, data$total, main = "Impact of being an \nart museum on its attendance", xlab = "Being an art museum", ylab = "Total visits", xaxt = "n", ylim = c(0, 500000))
 abline(third_regression, col = "darkgreen")
 axis(1, at = 0:1)
 # plot 2
-plot(data$history, data$total, main = "Link between being a history museum and its attendance", xlab = "Being a history museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
+plot(data$history, data$total, main = "Impact of being a \nhistory museum on its attendance", xlab = "Being a history museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
 abline(fourth_regression, col = "pink")
 axis(1, at = 0:1)
 # plot 3
-plot(data$science, data$total, main = "Link between being a science museum and its attendance", xlab = "Being a science museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
+plot(data$science, data$total, main = "Impact of being a \nscience museum on its attendance", xlab = "Being a science museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
 abline(fifth_regression, col = "orange")
 axis(1, at = 0:1)
 ```
@@ -773,21 +768,21 @@ axis(1, at = 0:1)
 
 Another question that could be asked is the impact of the museum's theme on the pre-existing relation between location and attendance. Is the impact of being located in Paris stronger if the museum is an Art museum ? Let's look into it.
 
-\*\* Link between being located in a big city and attendance, art theme\*\*
+**Link between being located in a big city and attendance, art theme**
 
 ```{r sixth regression}
 sixth_regression <- lm(total ~ city + art, data = data)
 summary(sixth_regression)
 ```
 
-\*\* Link between being located in a big city and attendance, history theme\*\*
+**Link between being located in a big city and attendance, history theme**
 
 ```{r seventh regression}
 seventh_regression <- lm(total ~ city + history, data = data)
 summary(seventh_regression)
 ```
 
-\*\* Link between being located in a big city and attendance, science theme\*\*
+**Link between being located in a big city and attendance, science theme**
 
 ```{r eighth regression}
 eighth_regression <- lm(total ~ city + science, data = data)
