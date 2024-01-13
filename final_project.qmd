@@ -2,7 +2,7 @@
 title: "Data Management Project: Location and theme impact on museum attendance"
 author: Joséphine Laguardia and Lucile Dubarry
 format: 
-  wordcount-html: default
+  wordcount-pdf: default
 code-fold: true
 echo: false
 ---
@@ -70,7 +70,7 @@ NA_dompal <- museum |> filter(is.na(dompal)) |> nrow()
 ```
 
 We indicate below the number of NA in the key variables of our analysis:
-- in the attendance data base: we do not have the attendance record of`r NA_total` museums, which will not be counted when analyzing the frequentation records. 
+- in the attendance data base: we do not have the attendance record of `r NA_total` museums, which will not be counted when analyzing the frequentation records. 
 - in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes. 
 These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
 
@@ -379,7 +379,7 @@ data |>
   summarise(total_museum = n()) |>
   ggplot(aes(x = PARIS, y = total_museum)) +
   geom_bar(stat = "identity", fill = "darkgreen") +
-  labs(title = "Comparison of the number of museums in Paris and other location ",
+  labs(title = "Comparison of the number of museums in Paris and \nother location ",
        x = "Location of the museum",
        y = "Number of museums") +
   scale_x_discrete(labels = c("other location", "located in Paris"))
@@ -401,7 +401,7 @@ data |> filter(!is.na(total)) |>
   summarise(total_freq = sum(total)) |>
   ggplot(aes(x = PARIS, y = total_freq)) +
   geom_bar(stat = "identity", fill = "darkgreen") +
-  labs(title = "Frequentation of museums located in Paris and other location",
+  labs(title = "Frequentation of museums located in Paris and \nother location",
        x = "Location of the museum",
        y = "Cumulative frequentation") +
   scale_y_continuous(labels = scales::comma) +
@@ -498,7 +498,7 @@ category_count <- data_expanded |>
 
 ggplot(category_count, aes(x = category, y = total_museums, fill = category)) +
   geom_bar(stat = "identity") +
-  labs(title = "Distribution of museum theme (considering categories individually)",
+  labs(title = "Distribution of museum theme (considering \ncategories individually)",
        x = "Categories",
        y = "Number of museums") +
   scale_fill_brewer(palette="Greens")
@@ -529,7 +529,7 @@ region_count <- data_expanded |>
 
 ggplot(region_count, aes(x = regions, y = total_museums, fill = category)) +
   geom_col(position = "dodge") +
-  labs(title = "Distribution of museum theme at the regional level",
+  labs(title = "Distribution of museum theme at the \nregional level",
        x = "Regions",
        y = "Number of museums") +
   theme(axis.title = element_text(size = 13,
@@ -552,7 +552,7 @@ data |> filter(!is.na(total)) |> filter(!is.na(category)) |>
   group_by(category) |>
   ggplot(aes(x = category, y = total)) +
   geom_bar(stat="identity", fill = "darkgreen") +
-  labs(title = "Frequentation at the national level depending on types",
+  labs(title = "Frequentation at the national level \ndepending on types",
        x = "Categories",
        y = "Number of museums") +
   coord_flip() +
@@ -593,7 +593,7 @@ freq_count <- data_expanded |>
 
 ggplot(freq_count, aes(x = category, y = freq_category, fill = category)) +
   geom_bar(stat = "identity") +
-  labs(title = "Frequentation of museums (considering categories individually)",
+  labs(title = "Frequentation of museums (considering \ncategories individually)",
        x = "Categories",
        y = "Total frequentation") +
   scale_y_continuous(labels = scales::comma) +
@@ -682,7 +682,7 @@ summary(first_regression)
 From this regression, we can say that the average number of visitors per year for a museum not located in one of the 10 biggest cities is estimated to be 34856. For a museum located in one of those cities, on the other hand, it is estimated to be 34856 + 260451, which is equal to: 295 307 visitors. This means that the sole fact of being located in a big city multiplies the number of visitors by more than 8. 
 
 ```{r}
-plot(data$city, data$total, main = "Link between being located in a big city and museums attendance", xlab = "Located in one of the 10 biggest cities", ylab = "Total visits in a year", xaxt = "n", ylim = c(0, 700000))
+plot(data$city, data$total, main = "Link between being located in a big city \nand museums attendance", xlab = "Located in one of the 10 biggest cities", ylab = "Total visits in a year", xaxt = "n", ylim = c(0, 700000))
 abline(first_regression, col = "red")
 axis(1, at = 0:1)
 ```
@@ -706,7 +706,7 @@ summary(second_regression)
 From this regression, we can say that the average number of visitors per year for a museum not located in Paris is estimated to be 39521. For a museum located in Paris, on the other hand, it is estimated to be 39521 + 501212, which is equal to: 540 733 visitors. This means that the only fact of being located in Paris multiplies the attendance numbers by more than 13 ! 
 
 ```{r}
-plot(data$city, data$total, main = "Link between being located in Paris and museums attendance", xlab = "Located in Paris", ylab = "Total visits", xaxt = "n",ylim = c(0, 700000))
+plot(data$city, data$total, main = "Link between being located in Paris \nand museums attendance", xlab = "Located in Paris", ylab = "Total visits", xaxt = "n",ylim = c(0, 700000))
 abline(second_regression, col = "blue")
 axis(1, at = 0:1)
 ```
@@ -782,15 +782,15 @@ For science museums, the effect is opposite: the only fact of being a Science mu
 ```{r plots 1}
 par(mfrow = c(1,3))
 # plot 1
-plot(data$art, data$total, main = "Impact of being an \nart museum on its attendance", xlab = "Being an art museum", ylab = "Total visits", xaxt = "n", ylim = c(0, 500000))
+plot(data$art, data$total, main = "Impact of being an \nart museum \non its attendance", xlab = "Being an art museum", ylab = "Total visits", xaxt = "n", ylim = c(0, 500000))
 abline(third_regression, col = "darkgreen")
 axis(1, at = 0:1)
 # plot 2
-plot(data$history, data$total, main = "Impact of being a \nhistory museum on its attendance", xlab = "Being a history museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
+plot(data$history, data$total, main = "Impact of being a \nhistory museum \non its attendance", xlab = "Being a history museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
 abline(fourth_regression, col = "pink")
 axis(1, at = 0:1)
 # plot 3
-plot(data$science, data$total, main = "Impact of being a \nscience museum on its attendance", xlab = "Being a science museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
+plot(data$science, data$total, main = "Impact of being a \nscience museum \non its attendance", xlab = "Being a science museum", ylab = "Total visits", xaxt = "n",ylim = c(0, 500000))
 abline(fifth_regression, col = "orange")
 axis(1, at = 0:1)
 ```
@@ -843,7 +843,7 @@ What about the link between attendance and museum category? Based on our regress
 Science museums, on the other hand, don't seem to be on a roll in terms of the current museum landscape in France (much to our disappointment). As regards the number of museums, they rank third ( this is true for all regions). In terms of attendance, there is a significant difference with the other two categories, with only `r freq_count[3,3]`% of visits to museums categorized in Science. The regression we made corresponds to this finding, since this theme is the only one to have a negative effect on the attendance rate. 
 
 # Annex
-
+::: {#refs}
 ## Link to our GitHub
 
 We work on the Github project, available [here](https://github.com/luciledubarry/LAGUARDIA_DUBARRY.git).
@@ -869,3 +869,4 @@ REF; DOMPAL; ARTISTE;PROT-ESP; PROT-BAT;LATITUDE;LONGITUDE
 We join the data bases with reference to the **Muséofile ID number**. On the Museofile database it is the variable named REF and on the Frequentation database it is the variable named ID_MUSEOFILE.
 We use the function "inner_join" as it allows us to keep only the museums for which we have all the information (the frequentation and the characteristics). 
 
+:::
