@@ -70,9 +70,12 @@ NA_dompal <- museum |> filter(is.na(dompal)) |> nrow()
 ```
 
 We indicate below the number of NA in the key variables of our analysis:
+
 - in the attendance data base: we do not have the attendance record of `r NA_total` museums, which will not be counted when analyzing the frequentation records. 
-- in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes. 
-These missing variables are however in the minority in the final data base (on `r nrow(data)` museums) and will not affect the results for our analysis.
+
+- in the museum data base: `r NA_dompal` museums do not indicate their themes, then we will not take these museums  into account when studying the museum themes.
+
+These missing variables are however in the minority in the final data base and will not affect the results for our analysis.
 
 ## Variables
 
@@ -208,7 +211,7 @@ knitr::kable(vitality2,
 
 This table shows us the cultural power of the "Île-de-France" region. With only `r vitality1[10,3]` % of total french museums, this region captures almost 60% of total visitors in France. The region completely crushes the others' percentages. Nevertheless, we find again the biggest regions : Auvergne-Rhones-Alpes (`r vitality2[1,3]` %), Provence-Alpes-Côte d'Azur (`r vitality2[17,3]` %), Grand Est (`r vitality2[6,3]` %), and Occitanie (`r vitality2[15,3]` %).
 
-In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side, where we can se that the comparison between share of museums and share of visitors is outstandingly noticeable for Île-de-France.
+In order to compare the share of museums and the share of visitors a bit better, here is a graph showing them side by side, where we can see that the comparison between share of museums and share of visitors is outstandingly noticeable for Île-de-France.
 
 ```{r}
 # we merge our two data frames
@@ -254,11 +257,11 @@ vitality <- merge(vitality1,vitality2)
 # ordering in alphabetical order (so that each data base has the same order)
 regions <- regions[order(regions$nom),,]
 vitality <- vitality[order(vitality$regions),,]
-# deleting the rows that weren't common to both data base
-regions <- filter(regions, nom != "Mayotte")
-vitality <- filter(vitality, regions != "ST PIERRE ET MIQUELON")
+# deleting the rows that weren't common to both data base + deleting the overseas regions
+regions <- filter(regions, nom != "Mayotte", nom != "Guadeloupe", nom != "Guyane", nom != "La Réunion", nom != "Martinique")
+vitality <- filter(vitality, regions != "ST PIERRE ET MIQUELON", regions != "GUADELOUPE", regions != "GUYANE", regions != "LA REUNION", regions != "MARTINIQUE")
 # creating an index (to facilitate the joining)
-id <- as.character(1:17)
+id <- as.character(1:13)
 regions <- cbind(regions, id)
 vitality <- cbind(vitality, id)
 # joining the data bases 
@@ -278,7 +281,7 @@ plot <- ggplot(regions1)+
   coord_sf(xlim = c(-5.5,10),ylim=c(41,51))+
   theme_void() +
   geom_sf_label(aes(label = number))
-plot + labs(title = "Cultural vitality in France", subtitle = "Number of museums in each french region")
+plot + labs(title = "Cultural vitality in France", subtitle = "Number of museums in each french region") + theme(legend.key.size = unit(0.3, "cm"))
 ```
 
 Unfortunately, we were unable to represent the French overseas regions on this map.
